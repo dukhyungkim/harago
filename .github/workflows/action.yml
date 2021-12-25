@@ -6,7 +6,7 @@ on:
 
 env:
   REGISTRY: harbor.brique.kr
-  IMAGE_NAME: $REGISTRY/chatbot/docgo
+  IMAGE_NAME: chatbot/docgo
 
 jobs:
   build:
@@ -45,4 +45,4 @@ jobs:
       uses: docker/build-push-action@v2
       with:
         push: true
-        tags: ${{ env.IMAGE_NAME }}:${{ github.run_number }}
+        tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.run_number }}
