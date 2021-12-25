@@ -6,7 +6,7 @@ on:
 
 env:
   REGISTRY: harbor.brique.kr
-  IMAGE_NAME: ${{ env.REGISTRY }}/chatbot/docgo
+  IMAGE_NAME: $REGISTRY/chatbot/docgo
 
 jobs:
   build:
