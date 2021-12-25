@@ -1,44 +1,36 @@
-# This is a basic workflow to help you get started with Actions
-
 name: CI
 
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
   push:
     branches: [ main ]
 
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
-
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   build:
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
       - name: Setup Go environment
         uses: actions/setup-go@v2.1.5
         with:
-          # The Go version to download (if necessary) and use. Supports semver spec and ranges.
           go-version: 1.17
 
       - name: Run golangci-lint
-        # You may pin to the exact commit or the version.
-        # uses: golangci/golangci-lint-action@5c56cd6c9dc07901af25baab6f2b0d9f3b7c3018
         uses: golangci/golangci-lint-action@v2.5.2
         with:
-          # version of golangci-lint to use in form of v1.2 or v1.2.3 or `latest` to use the latest version
           version: latest
 
       - name: Run build
         run: go build
+
+      - name: Run ls
+        run: ls
+
+    deploy:
+      runs-on: ubuntu-latest
+      needs: [build]
+      steps:
+      - uses: actions/checkout@v2
 
       - name: Build and push
         id: docker_build
