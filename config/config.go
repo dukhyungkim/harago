@@ -11,14 +11,13 @@ import (
 )
 
 type Config struct {
-	Bot    *Bot  `yaml:"bot"`
-	Stream *Nats `yaml:"stream"`
-	DB     *DB   `yaml:"db"`
+	Server *Server `yaml:"server"`
+	Stream *Nats   `yaml:"stream"`
+	DB     *DB     `yaml:"db"`
 }
 
-type Bot struct {
-	Project string `yaml:"project"`
-	Subject string `yaml:"subject"`
+type Server struct {
+	Port int `yaml:"port"`
 }
 
 type Nats struct {
