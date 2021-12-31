@@ -20,9 +20,3 @@ type User struct {
 	Type        string `json:"type,omitempty"`
 	Email       string `json:"email,omitempty"`
 }
-
-const (
-	AddedToSpace     = "ADDED_TO_SPACE"
-	Message          = "MESSAGE"
-	RemovedFromSpace = "REMOVED_FROM_SPACE"
-)

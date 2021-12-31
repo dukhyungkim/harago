@@ -4,6 +4,7 @@ import (
 	"docgo/config"
 	"docgo/gservice"
 	"docgo/gservice/gchat"
+	"docgo/handler"
 	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"log"
@@ -31,7 +32,7 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	gChat, err := gchat.NewGChat(gService)
+	gChat, err := gchat.NewGChat(gService, handler.NewDMHandler(), handler.NewRoomHandler())
 	if err != nil {
 		log.Fatalln(err)
 	}
