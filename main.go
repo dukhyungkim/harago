@@ -1,6 +1,7 @@
 package main
 
 import (
+	"docgo/cmd"
 	"docgo/config"
 	"docgo/gservice"
 	"docgo/gservice/gchat"
@@ -32,7 +33,12 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	gChat, err := gchat.NewGChat(gService, handler.NewDMHandler(), handler.NewRoomHandler())
+	executor := cmd.NewExecutor()
+	if err = executor.LoadCommands(cfg); err != nil {
+		log.Fatalln(err)
+	}
+
+	gChat, err := gchat.NewGChat(gService, handler.NewDMHandler(executor), handler.NewRoomHandler(executor))
 	if err != nil {
 		log.Fatalln(err)
 	}

@@ -6,5 +6,5 @@ const (
 	RemovedFromSpace = "REMOVED_FROM_SPACE"
 
 	DM = "DM"
-	//ROOM = "ROOM"
+	// ROOM = "ROOM"
 )

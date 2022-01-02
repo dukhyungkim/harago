@@ -2,11 +2,11 @@ package gservice
 
 import (
 	"context"
+	"docgo/common"
 	"fmt"
 	"golang.org/x/oauth2/google"
-	"io/ioutil"
 	"net/http"
-	"time"
+	"os"
 )
 
 type GService struct {
@@ -14,7 +14,7 @@ type GService struct {
 }
 
 func NewGService(credential string) (*GService, error) {
-	b, err := ioutil.ReadFile(credential)
+	b, err := os.ReadFile(credential)
 	if err != nil {
 		return nil, fmt.Errorf("unable to read client secret file: %w", err)
 	}
@@ -26,10 +26,10 @@ func NewGService(credential string) (*GService, error) {
 		return nil, fmt.Errorf("unable to parse client secret file to configFromJSON: %w", err)
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), common.DefaultTimeout)
 	defer cancel()
-	httpClient := configFromJSON.Client(ctx)
 
+	httpClient := configFromJSON.Client(ctx)
 	return &GService{client: httpClient}, nil
 }
 

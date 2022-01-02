@@ -1,6 +1,9 @@
 package gchat
 
-import "google.golang.org/api/chat/v1"
+import (
+	"fmt"
+	"google.golang.org/api/chat/v1"
+)
 
 // based chat.DeprecatedEvent
 type ChatEvent struct {
@@ -12,10 +15,15 @@ type ChatEvent struct {
 	User      *User            `json:"user,omitempty"`
 }
 
+func (c *ChatEvent) String() string {
+	return fmt.Sprintf("EventType: %s, EventTime: %v, SpaceType: %s, UserName: %s, Email: %s",
+		c.Type, c.EventTime, c.Space.Type, c.User.DisplayName, c.User.Email)
+}
+
 // based chat.User
 type User struct {
 	DisplayName string `json:"displayName,omitempty"`
-	DomainId    string `json:"domainId,omitempty"`
+	DomainID    string `json:"domainId,omitempty"`
 	Name        string `json:"name,omitempty"`
 	Type        string `json:"type,omitempty"`
 	Email       string `json:"email,omitempty"`

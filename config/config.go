@@ -2,18 +2,19 @@ package config
 
 import (
 	"context"
+	"docgo/common"
 	"fmt"
 	"github.com/ilyakaznacheev/cleanenv"
 	"go.etcd.io/etcd/client/v3"
 	"gopkg.in/yaml.v3"
 	"log"
-	"time"
 )
 
 type Config struct {
 	Server *Server `yaml:"server"`
-	Stream *Nats   `yaml:"stream"`
+	Nats   *Nats   `yaml:"nats"`
 	DB     *DB     `yaml:"db"`
+	Harbor *Harbor `yaml:"harbor"`
 }
 
 type Server struct {
@@ -32,6 +33,12 @@ type DB struct {
 	Host     string `yaml:"host"`
 	Port     int    `yaml:"port"`
 	Database string `yaml:"database"`
+	Username string `yaml:"username"`
+	Password string `yaml:"password"`
+}
+
+type Harbor struct {
+	URL      string `yaml:"url"`
 	Username string `yaml:"username"`
 	Password string `yaml:"password"`
 }
@@ -71,27 +78,28 @@ func fromEtcd(cfg *Config) error {
 	if etcdCfg.Username != "" {
 		cli, err = clientv3.New(clientv3.Config{
 			Endpoints:   etcdCfg.Endpoints,
-			DialTimeout: 5 * time.Second,
+			DialTimeout: common.DefaultTimeout,
 			Username:    etcdCfg.Username,
 			Password:    etcdCfg.Password,
 		})
 	} else {
 		cli, err = clientv3.New(clientv3.Config{
 			Endpoints:   etcdCfg.Endpoints,
-			DialTimeout: 5 * time.Second,
+			DialTimeout: common.DefaultTimeout,
 		})
 	}
 	if err != nil {
 		return fmt.Errorf("failed to connect etcd; %w", err)
 	}
 	defer func() {
-		if err := cli.Close(); err != nil {
+		if err = cli.Close(); err != nil {
 			log.Printf("failed to close etcd client cleany; %v\n", err)
 		}
 	}()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), common.DefaultTimeout)
 	defer cancel()
+
 	resp, err := cli.Get(ctx, etcdCfg.ConfigKey)
 	if err != nil {
 		return fmt.Errorf("failed to get kv; %w", err)

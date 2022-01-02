@@ -2,6 +2,7 @@ package gchat
 
 import (
 	"context"
+	"docgo/common"
 	"docgo/gservice"
 	"google.golang.org/api/chat/v1"
 	"google.golang.org/api/option"
@@ -15,8 +16,8 @@ type GChat struct {
 	roomHandler Handler
 }
 
-func NewGChat(gService *gservice.GService, dmHandler Handler, roomHandler Handler) (*GChat, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+func NewGChat(gService *gservice.GService, dmHandler, roomHandler Handler) (*GChat, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), common.DefaultTimeout)
 	defer cancel()
 
 	service, err := chat.NewService(ctx, option.WithHTTPClient(gService.GetClient()))
@@ -28,12 +29,16 @@ func NewGChat(gService *gservice.GService, dmHandler Handler, roomHandler Handle
 }
 
 func (c *GChat) HandleMessage(event *ChatEvent) *chat.Message {
-	log.Printf("%+v\n", *event)
+	log.Println(event)
+	start := time.Now()
+
 	var chatMessage *chat.Message
 	if event.Space.Type == DM {
 		chatMessage = c.dmHandler.ProcessMessage(event)
 	} else {
 		chatMessage = c.roomHandler.ProcessMessage(event)
 	}
+
+	log.Printf("elapsed: %v", time.Since(start))
 	return chatMessage
 }
