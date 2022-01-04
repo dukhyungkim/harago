@@ -5,6 +5,7 @@ on:
     branches: [ main ]
 
 env:
+  GOPRIVATE: github.com/dukhyungkim
   REGISTRY: harbor.brique.kr
   IMAGE_NAME: chatbot/docgo
 
@@ -18,6 +19,12 @@ jobs:
         uses: actions/setup-go@v2.1.5
         with:
           go-version: 1.17
+
+      - name: Configure git for private modules
+        env:
+          GOPRIVATE_USERNAME: ${{ secrets.GOPRIVAE_USERNAME }}
+          GOPRIVATE_TOKEN: ${{ secrets.GOPRIVAE_TOKEN }}
+        run: git config --global url."https://${GOPRIVATE_USERNAME}:${GOPRIVATE_TOKEN}@github.com".insteadOf "https://github.com"
 
       - name: Run golangci-lint
         uses: golangci/golangci-lint-action@v2.5.2
