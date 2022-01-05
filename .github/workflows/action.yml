@@ -22,9 +22,8 @@ jobs:
 
       - name: Configure git for private modules
         env:
-          GOPRIVATE_USERNAME: ${{ secrets.GOPRIVAE_USERNAME }}
           GOPRIVATE_TOKEN: ${{ secrets.GOPRIVAE_TOKEN }}
-        run: git config --global url."https://${GOPRIVATE_USERNAME}:${GOPRIVATE_TOKEN}@github.com".insteadOf "https://github.com"
+        run: git config --global url."https://${GOPRIVATE_TOKEN}@github.com".insteadOf "https://github.com"
 
       - name: Run golangci-lint
         uses: golangci/golangci-lint-action@v2.5.2
