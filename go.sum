@@ -78,8 +78,6 @@ github.com/coreos/go-systemd/v22 v22.3.2/go.mod h1:Y58oyj3AT4RCenI/lSvhwexgC+NSV
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
-github.com/dukhyungkim/harbor-client v0.0.0-20211231160016-6e29710e4232 h1:LuJ8MZk6se1W40n2g5ob7i9GsnhuAEhlpb23l4GPNOY=
-github.com/dukhyungkim/harbor-client v0.0.0-20211231160016-6e29710e4232/go.mod h1:Ww15U0HAB8RFSt84ZzwnIFW0XG9p2zurm1MTFMfciWk=
 github.com/dukhyungkim/harbor-client v0.0.0-20220101161057-d18c6253fd33 h1:UlgjcDK+r8ZrXW4jiyUEhs//kZyesu37AmH577tdo7I=
 github.com/dukhyungkim/harbor-client v0.0.0-20220101161057-d18c6253fd33/go.mod h1:Ww15U0HAB8RFSt84ZzwnIFW0XG9p2zurm1MTFMfciWk=
 github.com/dustin/go-humanize v1.0.0/go.mod h1:HtrtbFcZ19U5GC7JDqmcUSB87Iq5E25KnS6fMYU6eOk=
