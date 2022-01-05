@@ -25,13 +25,13 @@ jobs:
           GOPRIVATE_TOKEN: ${{ secrets.GOPRIVAE_TOKEN }}
         run: git config --global url."https://${GOPRIVATE_TOKEN}@github.com".insteadOf "https://github.com"
 
+      - name: Run build
+        run: go build
+
       - name: Run golangci-lint
         uses: golangci/golangci-lint-action@v2.5.2
         with:
           version: latest
-
-      - name: Run build
-        run: go build
 
   deploy:
     runs-on: ubuntu-latest
