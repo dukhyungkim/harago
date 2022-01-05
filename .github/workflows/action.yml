@@ -22,7 +22,7 @@ jobs:
 
       - name: Configure git for private modules
         env:
-          GOPRIVATE_TOKEN: ${{ secrets.GOPRIVAE_TOKEN }}
+          GOPRIVATE_TOKEN: ${{ secrets.GOPRIVATE_TOKEN }}
         run: git config --global url."https://x-access-token:${GOPRIVATE_TOKEN}@github.com".insteadOf "https://github.com"
 
       - name: Run build
