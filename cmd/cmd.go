@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"docgo/cmd/cmdrepo"
+	"docgo/cmd/cmdharbor"
 	"docgo/common"
 	"docgo/config"
 	"docgo/gservice/gchat"
@@ -62,7 +62,7 @@ func (e *Executor) LoadCommands(cfg *config.Config) error {
 		Password: cfg.Harbor.Password,
 	})
 
-	repoCommand := cmdrepo.NewRepoCommand(harborClient)
+	repoCommand := cmdharbor.NewHarborCommand(harborClient)
 	if err := e.AddCommand(repoCommand.GetName(), repoCommand); err != nil {
 		return err
 	}
