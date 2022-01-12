@@ -108,6 +108,13 @@ func makeRepositoryCard(repositories []*harborModel.Repository) []*chat.Card {
 								ContentMultiline: true,
 							},
 						},
+						{
+							KeyValue: &chat.KeyValue{
+								TopLabel:         "PullCount",
+								Content:          fmt.Sprint(repositories[i].PullCount),
+								ContentMultiline: true,
+							},
+						},
 					},
 				},
 			},
