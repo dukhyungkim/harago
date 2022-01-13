@@ -80,7 +80,7 @@ func makeProjectCard(projects []*harborModel.Project) []*chat.Card {
 						{
 							KeyValue: &chat.KeyValue{
 								TopLabel:         "OwnerName",
-								Content:          fmt.Sprint(projects[i].OwnerName),
+								Content:          projects[i].OwnerName,
 								ContentMultiline: true,
 							},
 						},
