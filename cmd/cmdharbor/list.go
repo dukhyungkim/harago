@@ -1,6 +1,7 @@
 package cmdharbor
 
 import (
+	"docgo/common"
 	"fmt"
 	"github.com/dukhyungkim/harbor-client"
 	harborModel "github.com/dukhyungkim/harbor-client/model"
@@ -43,8 +44,59 @@ func listRepositories(client harbor.Client, params *cmdParams) *chat.Message {
 }
 
 func listProjects(client harbor.Client, params *cmdParams) *chat.Message {
-	log.Printf("%+v\n", params)
-	return &chat.Message{Text: "listProjects"}
+	projectsParams := harborModel.NewListProjectsParams()
+	if params.Page != 0 {
+		projectsParams.Page = params.Page
+	}
+	if params.Size != 0 {
+		projectsParams.PageSize = params.Size
+	}
+
+	projects, err := client.ListProjects(projectsParams)
+	if err != nil {
+		return &chat.Message{Text: common.ErrHarborResponse(err).Error()}
+	}
+	cards := makeProjectCard(projects)
+	return &chat.Message{Text: "list of projects", Cards: cards}
+}
+
+func makeProjectCard(projects []*harborModel.Project) []*chat.Card {
+	cards := make([]*chat.Card, len(projects))
+	for i := range projects {
+		cards[i] = &chat.Card{
+			Header: &chat.CardHeader{
+				Title: projects[i].Name,
+			},
+			Sections: []*chat.Section{
+				{
+					Widgets: []*chat.WidgetMarkup{
+						{
+							KeyValue: &chat.KeyValue{
+								TopLabel:         "RepoCount",
+								Content:          fmt.Sprint(projects[i].RepoCount),
+								ContentMultiline: true,
+							},
+						},
+						{
+							KeyValue: &chat.KeyValue{
+								TopLabel:         "OwnerName",
+								Content:          fmt.Sprint(projects[i].OwnerName),
+								ContentMultiline: true,
+							},
+						},
+						{
+							KeyValue: &chat.KeyValue{
+								TopLabel:         "UpdateTime",
+								Content:          projects[i].UpdateTime,
+								ContentMultiline: true,
+							},
+						},
+					},
+				},
+			},
+		}
+	}
+	return cards
 }
 
 func makeRepositoryCard(repositories []*harborModel.Repository) []*chat.Card {
@@ -66,8 +118,8 @@ func makeRepositoryCard(repositories []*harborModel.Repository) []*chat.Card {
 						},
 						{
 							KeyValue: &chat.KeyValue{
-								TopLabel:         "CreationTime",
-								Content:          repositories[i].CreationTime,
+								TopLabel:         "PullCount",
+								Content:          fmt.Sprint(repositories[i].PullCount),
 								ContentMultiline: true,
 							},
 						},
@@ -75,13 +127,6 @@ func makeRepositoryCard(repositories []*harborModel.Repository) []*chat.Card {
 							KeyValue: &chat.KeyValue{
 								TopLabel:         "UpdateTime",
 								Content:          repositories[i].UpdateTime,
-								ContentMultiline: true,
-							},
-						},
-						{
-							KeyValue: &chat.KeyValue{
-								TopLabel:         "PullCount",
-								Content:          fmt.Sprint(repositories[i].PullCount),
 								ContentMultiline: true,
 							},
 						},
