@@ -2,11 +2,11 @@ package cmdharbor
 
 import (
 	"docgo/common"
+	"docgo/util"
 	"fmt"
 	"github.com/dukhyungkim/harbor-client"
 	harborModel "github.com/dukhyungkim/harbor-client/model"
 	"google.golang.org/api/chat/v1"
-	"log"
 )
 
 func (c *CmdHarbor) handleList(params *cmdParams) *chat.Message {
@@ -19,28 +19,6 @@ func (c *CmdHarbor) handleList(params *cmdParams) *chat.Message {
 	}
 
 	return listProjects(c.harborClient, params)
-}
-
-func listArtifacts(client harbor.Client, params *cmdParams) *chat.Message {
-	log.Printf("%+v\n", params)
-	return &chat.Message{Text: "listArtifacts"}
-}
-
-func listRepositories(client harbor.Client, params *cmdParams) *chat.Message {
-	repositoriesParams := harborModel.NewListRepositoriesParams()
-	if params.Page != 0 {
-		repositoriesParams.Page = params.Page
-	}
-	if params.Size != 0 {
-		repositoriesParams.PageSize = params.Size
-	}
-
-	repositories, err := client.ListRepositories(params.ProjectName, repositoriesParams)
-	if err != nil {
-		return &chat.Message{Text: fmt.Sprintf("Error!: %s", err.Error())}
-	}
-	cards := makeRepositoryCard(repositories)
-	return &chat.Message{Text: fmt.Sprintf("list of repositories in %s", params.ProjectName), Cards: cards}
 }
 
 func listProjects(client harbor.Client, params *cmdParams) *chat.Message {
@@ -58,6 +36,40 @@ func listProjects(client harbor.Client, params *cmdParams) *chat.Message {
 	}
 	cards := makeProjectCard(projects)
 	return &chat.Message{Text: "list of projects", Cards: cards}
+}
+
+func listRepositories(client harbor.Client, params *cmdParams) *chat.Message {
+	repositoriesParams := harborModel.NewListRepositoriesParams()
+	if params.Page != 0 {
+		repositoriesParams.Page = params.Page
+	}
+	if params.Size != 0 {
+		repositoriesParams.PageSize = params.Size
+	}
+
+	repositories, err := client.ListRepositories(params.ProjectName, repositoriesParams)
+	if err != nil {
+		return &chat.Message{Text: common.ErrHarborResponse(err).Error()}
+	}
+	cards := makeRepositoryCard(repositories)
+	return &chat.Message{Text: fmt.Sprintf("list of repositories in %s", params.ProjectName), Cards: cards}
+}
+
+func listArtifacts(client harbor.Client, params *cmdParams) *chat.Message {
+	artifactsParams := harborModel.NewListArtifactsParams()
+	if params.Page != 0 {
+		artifactsParams.Page = params.Page
+	}
+	if params.Size != 0 {
+		artifactsParams.PageSize = params.Size
+	}
+
+	artifacts, err := client.ListArtifacts(params.ProjectName, params.RepoName, artifactsParams)
+	if err != nil {
+		return &chat.Message{Text: common.ErrHarborResponse(err).Error()}
+	}
+	cards := makeArtifactCard(artifacts)
+	return &chat.Message{Text: fmt.Sprintf("list of artifacts in %s/%s", params.ProjectName, params.RepoName), Cards: cards}
 }
 
 func makeProjectCard(projects []*harborModel.Project) []*chat.Card {
@@ -127,6 +139,45 @@ func makeRepositoryCard(repositories []*harborModel.Repository) []*chat.Card {
 							KeyValue: &chat.KeyValue{
 								TopLabel:         "UpdateTime",
 								Content:          repositories[i].UpdateTime,
+								ContentMultiline: true,
+							},
+						},
+					},
+				},
+			},
+		}
+	}
+	return cards
+}
+
+func makeArtifactCard(artifacts []*harborModel.Artifact) []*chat.Card {
+	cards := make([]*chat.Card, len(artifacts))
+	for i := range artifacts {
+		cards[i] = &chat.Card{
+			Header: &chat.CardHeader{
+				Title: artifacts[i].Digest[:15],
+			},
+			Sections: []*chat.Section{
+				{
+					Widgets: []*chat.WidgetMarkup{
+						//{
+						//	KeyValue: &chat.KeyValue{
+						//		TopLabel:         "Tags",
+						//		Content:          artifacts[i].Tags.,
+						//		ContentMultiline: true,
+						//	},
+						//},
+						{
+							KeyValue: &chat.KeyValue{
+								TopLabel:         "Size",
+								Content:          util.ByteCountIEC(int64(artifacts[i].Size)),
+								ContentMultiline: true,
+							},
+						},
+						{
+							KeyValue: &chat.KeyValue{
+								TopLabel:         "PushTime",
+								Content:          artifacts[i].PushTime,
 								ContentMultiline: true,
 							},
 						},
