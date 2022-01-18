@@ -1,4 +1,4 @@
-module docgo
+module harago
 
 go 1.17
 

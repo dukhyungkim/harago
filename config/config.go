@@ -2,11 +2,11 @@ package config
 
 import (
 	"context"
-	"docgo/common"
 	"fmt"
 	"github.com/ilyakaznacheev/cleanenv"
 	"go.etcd.io/etcd/client/v3"
 	"gopkg.in/yaml.v3"
+	"harago/common"
 	"log"
 )
 

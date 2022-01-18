@@ -1,9 +1,9 @@
 package cmdharbor
 
 import (
-	"docgo/gservice/gchat"
 	"github.com/dukhyungkim/harbor-client"
 	"google.golang.org/api/chat/v1"
+	"harago/gservice/gchat"
 	"strings"
 )
 

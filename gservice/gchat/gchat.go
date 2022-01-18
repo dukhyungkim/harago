@@ -2,10 +2,10 @@ package gchat
 
 import (
 	"context"
-	"docgo/common"
-	"docgo/gservice"
 	"google.golang.org/api/chat/v1"
 	"google.golang.org/api/option"
+	"harago/common"
+	"harago/gservice"
 	"log"
 	"time"
 )

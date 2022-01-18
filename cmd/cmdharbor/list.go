@@ -1,12 +1,12 @@
 package cmdharbor
 
 import (
-	"docgo/common"
-	"docgo/util"
 	"fmt"
 	"github.com/dukhyungkim/harbor-client"
 	harborModel "github.com/dukhyungkim/harbor-client/model"
 	"google.golang.org/api/chat/v1"
+	"harago/common"
+	"harago/util"
 )
 
 func (c *CmdHarbor) handleList(params *cmdParams) *chat.Message {

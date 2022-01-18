@@ -1,13 +1,13 @@
 package main
 
 import (
-	"docgo/cmd"
-	"docgo/config"
-	"docgo/gservice"
-	"docgo/gservice/gchat"
-	"docgo/handler"
 	"fmt"
 	"github.com/gofiber/fiber/v2"
+	"harago/cmd"
+	"harago/config"
+	"harago/gservice"
+	"harago/gservice/gchat"
+	"harago/handler"
 	"log"
 )
 

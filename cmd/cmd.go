@@ -1,13 +1,13 @@
 package cmd
 
 import (
-	"docgo/cmd/cmdharbor"
-	"docgo/common"
-	"docgo/config"
-	"docgo/gservice/gchat"
 	"fmt"
 	"github.com/dukhyungkim/harbor-client"
 	"google.golang.org/api/chat/v1"
+	"harago/cmd/cmdharbor"
+	"harago/common"
+	"harago/config"
+	"harago/gservice/gchat"
 	"strings"
 )
 

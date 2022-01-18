@@ -1,9 +1,9 @@
 package handler
 
 import (
-	"docgo/cmd"
-	"docgo/gservice/gchat"
 	"google.golang.org/api/chat/v1"
+	"harago/cmd"
+	"harago/gservice/gchat"
 )
 
 type RoomHandler struct {

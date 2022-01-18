@@ -2,9 +2,9 @@ package gservice
 
 import (
 	"context"
-	"docgo/common"
 	"fmt"
 	"golang.org/x/oauth2/google"
+	"harago/common"
 	"net/http"
 	"os"
 )
