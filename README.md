@@ -1,5 +1,3 @@
-# docgo
+# harago
 
-Doctor Strange Gopher
-
-I can do all thing by MAGIC!
+send order to workers
