@@ -5,10 +5,12 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"harago/cmd"
 	"harago/config"
+	"harago/entity"
 	"harago/gservice"
 	"harago/gservice/gchat"
 	"harago/handler"
 	"log"
+	"net/http"
 )
 
 func init() {
@@ -55,12 +57,21 @@ func setup(gChat *gchat.GChat) *fiber.App {
 		DisableStartupMessage: true,
 	})
 
-	app.Post("/", func(ctx *fiber.Ctx) error {
+	app.Post("/message", func(ctx *fiber.Ctx) error {
 		var event gchat.ChatEvent
 		if err := ctx.BodyParser(&event); err != nil {
 			log.Println(err)
 		}
 		return ctx.JSON(gChat.HandleMessage(&event))
+	})
+
+	app.Post("/harbor_notify", func(ctx *fiber.Ctx) error {
+		var event entity.HarborWebhookEvent
+		if err := ctx.BodyParser(&event); err != nil {
+			log.Println(err)
+		}
+		handler.HandleHarborEvent(&event)
+		return ctx.SendStatus(http.StatusOK)
 	})
 
 	return app
