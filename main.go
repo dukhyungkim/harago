@@ -70,7 +70,7 @@ func setup(gChat *gchat.GChat) *fiber.App {
 		if err := ctx.BodyParser(&event); err != nil {
 			log.Println(err)
 		}
-		handler.HandleHarborEvent(&event)
+		go handler.HandleHarborEvent(&event)
 		return ctx.SendStatus(http.StatusOK)
 	})
 
