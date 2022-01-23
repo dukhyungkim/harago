@@ -26,7 +26,7 @@ func listProjects(client *harbor.Client, params *cmdParams) *chat.Message {
 	if params.Page != 0 {
 		projectsParams.Page = params.Page
 	}
-	params.Size = 15
+	projectsParams.PageSize = 15
 	if params.Size != 0 {
 		projectsParams.PageSize = params.Size
 	}
@@ -48,7 +48,7 @@ func listRepositories(client *harbor.Client, params *cmdParams) *chat.Message {
 	if params.Page != 0 {
 		repositoriesParams.Page = params.Page
 	}
-	params.Size = 15
+	repositoriesParams.PageSize = 15
 	if params.Size != 0 {
 		repositoriesParams.PageSize = params.Size
 	}
@@ -70,7 +70,7 @@ func listArtifacts(client *harbor.Client, params *cmdParams) *chat.Message {
 	if params.Page != 0 {
 		artifactsParams.Page = params.Page
 	}
-	params.Size = 15
+	artifactsParams.PageSize = 15
 	if params.Size != 0 {
 		artifactsParams.PageSize = params.Size
 	}
