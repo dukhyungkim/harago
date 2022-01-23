@@ -9,7 +9,7 @@ import (
 
 type CmdHarbor struct {
 	name         string
-	harborClient harbor.Client
+	harborClient *harbor.Client
 }
 
 const (
@@ -17,7 +17,7 @@ const (
 	cmdList = "list"
 )
 
-func NewHarborCommand(harborClient harbor.Client) *CmdHarbor {
+func NewHarborCommand(harborClient *harbor.Client) *CmdHarbor {
 	return &CmdHarbor{
 		name:         "/harbor",
 		harborClient: harborClient,

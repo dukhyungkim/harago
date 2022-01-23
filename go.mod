@@ -3,7 +3,7 @@ module harago
 go 1.17
 
 require (
-	github.com/dukhyungkim/harbor-client v0.0.0-20220114165124-260f566c1987
+	github.com/dukhyungkim/harbor-client v0.0.0-20220123033132-b3dec586bbc5
 	github.com/gofiber/fiber/v2 v2.23.0
 	github.com/ilyakaznacheev/cleanenv v1.2.6
 	github.com/jessevdk/go-flags v1.5.0

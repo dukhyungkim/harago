@@ -21,7 +21,7 @@ func (c *CmdHarbor) handleList(params *cmdParams) *chat.Message {
 	return listProjects(c.harborClient, params)
 }
 
-func listProjects(client harbor.Client, params *cmdParams) *chat.Message {
+func listProjects(client *harbor.Client, params *cmdParams) *chat.Message {
 	projectsParams := harborModel.NewListProjectsParams()
 	if params.Page != 0 {
 		projectsParams.Page = params.Page
@@ -43,7 +43,7 @@ func listProjects(client harbor.Client, params *cmdParams) *chat.Message {
 	return &chat.Message{Text: "list of projects", Cards: cards}
 }
 
-func listRepositories(client harbor.Client, params *cmdParams) *chat.Message {
+func listRepositories(client *harbor.Client, params *cmdParams) *chat.Message {
 	repositoriesParams := harborModel.NewListRepositoriesParams()
 	if params.Page != 0 {
 		repositoriesParams.Page = params.Page
@@ -65,7 +65,7 @@ func listRepositories(client harbor.Client, params *cmdParams) *chat.Message {
 	return &chat.Message{Text: fmt.Sprintf("list of repositories in %s", params.ProjectName), Cards: cards}
 }
 
-func listArtifacts(client harbor.Client, params *cmdParams) *chat.Message {
+func listArtifacts(client *harbor.Client, params *cmdParams) *chat.Message {
 	artifactsParams := harborModel.NewListArtifactsParams()
 	if params.Page != 0 {
 		artifactsParams.Page = params.Page
@@ -117,7 +117,7 @@ func makeProjectCard(project *harborModel.Project) *chat.Card {
 					{
 						KeyValue: &chat.KeyValue{
 							TopLabel:         "UpdateTime",
-							Content:          project.UpdateTime,
+							Content:          project.UpdateTime.Local().String(),
 							ContentMultiline: true,
 						},
 					},
@@ -152,7 +152,7 @@ func makeRepositoryCard(repository *harborModel.Repository) *chat.Card {
 					{
 						KeyValue: &chat.KeyValue{
 							TopLabel:         "UpdateTime",
-							Content:          repository.UpdateTime,
+							Content:          repository.UpdateTime.Local().String(),
 							ContentMultiline: true,
 						},
 					},
@@ -187,7 +187,7 @@ func makeArtifactCard(artifact *harborModel.Artifact, tags []*harborModel.Tag) *
 					{
 						KeyValue: &chat.KeyValue{
 							TopLabel:         "PushTime",
-							Content:          artifact.PushTime,
+							Content:          artifact.PushTime.Local().String(),
 							ContentMultiline: true,
 						},
 					},
