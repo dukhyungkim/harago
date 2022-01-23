@@ -21,6 +21,10 @@ func newCmdParams(fields []string) (*cmdParams, error) {
 
 	params := &cmdParams{SubCmd: fields[1]}
 	paramsField := fields[2:]
+	if len(paramsField)%2 == 1 {
+		return nil, errors.New("invalid params")
+	}
+
 	for i := 0; i < len(paramsField); i += 2 {
 		if paramsField[i] == "proj" {
 			if i+1 >= len(paramsField) {
