@@ -88,6 +88,8 @@ github.com/dukhyungkim/harbor-client v0.0.0-20220114165124-260f566c1987 h1:FZTzx
 github.com/dukhyungkim/harbor-client v0.0.0-20220114165124-260f566c1987/go.mod h1:Ww15U0HAB8RFSt84ZzwnIFW0XG9p2zurm1MTFMfciWk=
 github.com/dukhyungkim/harbor-client v0.0.0-20220123033132-b3dec586bbc5 h1:Thi3mRM3oi7PwvAkviYJgncggwDsiVsj38cG+7whwuY=
 github.com/dukhyungkim/harbor-client v0.0.0-20220123033132-b3dec586bbc5/go.mod h1:Ww15U0HAB8RFSt84ZzwnIFW0XG9p2zurm1MTFMfciWk=
+github.com/dukhyungkim/harbor-client v0.0.0-20220125134006-3957a8318a18 h1:8Ihw+27ELVE3A6JZtbnawhiNrUZk/T1BDBZGYOnWM44=
+github.com/dukhyungkim/harbor-client v0.0.0-20220125134006-3957a8318a18/go.mod h1:Ww15U0HAB8RFSt84ZzwnIFW0XG9p2zurm1MTFMfciWk=
 github.com/dustin/go-humanize v1.0.0/go.mod h1:HtrtbFcZ19U5GC7JDqmcUSB87Iq5E25KnS6fMYU6eOk=
 github.com/envoyproxy/go-control-plane v0.9.0/go.mod h1:YTl/9mNaCwkRvm6d1a2C3ymFceY/DCBVvsKhRF0iEA4=
 github.com/envoyproxy/go-control-plane v0.9.1-0.20191026205805-5f8ba28d4473/go.mod h1:YTl/9mNaCwkRvm6d1a2C3ymFceY/DCBVvsKhRF0iEA4=

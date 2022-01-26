@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
+	harborModel "github.com/dukhyungkim/harbor-client/model"
 	"github.com/gofiber/fiber/v2"
 	"harago/cmd"
 	"harago/config"
-	"harago/entity"
 	"harago/gservice"
 	"harago/gservice/gchat"
 	"harago/handler"
@@ -66,7 +66,7 @@ func setup(gChat *gchat.GChat) *fiber.App {
 	})
 
 	app.Post("/harbor_notify", func(ctx *fiber.Ctx) error {
-		var event entity.HarborWebhookEvent
+		var event harborModel.WebhookEvent
 		if err := ctx.BodyParser(&event); err != nil {
 			log.Println(err)
 		}
