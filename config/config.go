@@ -35,6 +35,7 @@ type DB struct {
 	Database string `yaml:"database"`
 	Username string `yaml:"username"`
 	Password string `yaml:"password"`
+	Timezone string `yaml:"timezone"`
 }
 
 type Harbor struct {

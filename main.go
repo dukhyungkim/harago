@@ -6,6 +6,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"harago/cmd"
 	"harago/config"
+	"harago/db"
 	"harago/gservice"
 	"harago/gservice/gchat"
 	"harago/handler"
@@ -18,7 +19,7 @@ func init() {
 }
 
 func main() {
-	log.Println("Docgo Starting.")
+	log.Println("Harago Starting.")
 
 	opts, err := config.ParseFlags()
 	if err != nil {
@@ -28,6 +29,17 @@ func main() {
 	cfg, err := config.NewConfig(opts)
 	if err != nil {
 		log.Fatalln(err)
+	}
+
+	repo, err := db.NewPostgres(cfg.DB)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	if opts.AutoMigration {
+		if err := repo.AutoMigration(); err != nil {
+			log.Fatalln(err)
+		}
 	}
 
 	gService, err := gservice.NewGService(opts.Credential)
@@ -40,7 +52,9 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	gChat, err := gchat.NewGChat(gService, handler.NewDMHandler(executor), handler.NewRoomHandler(executor))
+	dmHandler := handler.NewDMHandler(executor, repo)
+	roomHandler := handler.NewRoomHandler(executor, repo)
+	gChat, err := gchat.NewGChat(gService, dmHandler, roomHandler)
 	if err != nil {
 		log.Fatalln(err)
 	}

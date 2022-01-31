@@ -3,9 +3,10 @@ package config
 import "github.com/jessevdk/go-flags"
 
 type Options struct {
-	ConfigFile string `long:"config" default:"config.yml" description:"path to config file"`
-	Credential string `long:"credential" default:"credential.json" description:"path to credential file"`
-	Etcd       bool   `long:"etcd" description:"read config from etcd"`
+	ConfigFile    string `long:"config" default:"config.yml" description:"path to config file"`
+	Credential    string `long:"credential" default:"credential.json" description:"path to credential file"`
+	Etcd          bool   `long:"etcd" description:"read config from etcd"`
+	AutoMigration bool   `long:"migration" description:"run orm auto migrator"`
 }
 
 func ParseFlags() (*Options, error) {

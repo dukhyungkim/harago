@@ -16,3 +16,5 @@
 
 credential*.json
 config*.yml
+
+/.idea
