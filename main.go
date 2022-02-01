@@ -10,6 +10,7 @@ import (
 	"harago/gservice"
 	"harago/gservice/gchat"
 	"harago/handler"
+	"harago/stream"
 	"log"
 	"net/http"
 )
@@ -35,12 +36,14 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
+	log.Println("connect to postgres ... success")
 
 	if opts.AutoMigration {
 		if err := repo.AutoMigration(); err != nil {
 			log.Fatalln(err)
 		}
 	}
+	log.Println("migrate to postgres ... success")
 
 	gService, err := gservice.NewGService(opts.Credential)
 	if err != nil {
@@ -59,14 +62,23 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	app := setup(gChat)
+	streamClient, err := stream.NewStream(cfg.Nats)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	defer streamClient.Close()
+	log.Println("connect to nats ... success")
+
+	harborEventHandle := handler.NewHarborEventHandler(streamClient)
+
+	app := setup(gChat, harborEventHandle)
 
 	addr := fmt.Sprintf(":%d", cfg.Server.Port)
 	log.Printf("Server startup ... %s\n", addr)
 	log.Fatalln(app.Listen(addr))
 }
 
-func setup(gChat *gchat.GChat) *fiber.App {
+func setup(gChat *gchat.GChat, harborEventHandler *handler.HarborEventHandler) *fiber.App {
 	app := fiber.New(fiber.Config{
 		DisableStartupMessage: true,
 	})
@@ -84,7 +96,7 @@ func setup(gChat *gchat.GChat) *fiber.App {
 		if err := ctx.BodyParser(&event); err != nil {
 			log.Println(err)
 		}
-		go handler.HandleHarborEvent(&event)
+		go harborEventHandler.HandleHarborEvent(&event)
 		return ctx.SendStatus(http.StatusOK)
 	})
 

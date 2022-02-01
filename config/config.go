@@ -8,6 +8,7 @@ import (
 	"gopkg.in/yaml.v3"
 	"harago/common"
 	"log"
+	"time"
 )
 
 type Config struct {
@@ -22,11 +23,10 @@ type Server struct {
 }
 
 type Nats struct {
-	Servers  []string `yaml:"servers"`
-	Group    string   `yaml:"group"`
-	Subject  string   `yaml:"subject"`
-	Username string   `yaml:"username"`
-	Password string   `yaml:"password"`
+	Servers  []string      `yaml:"servers"`
+	Username string        `yaml:"username"`
+	Password string        `yaml:"password"`
+	Timeout  time.Duration `yaml:"timeout"`
 }
 
 type DB struct {
@@ -45,10 +45,10 @@ type Harbor struct {
 }
 
 type Etcd struct {
-	Endpoints []string `env:"DOCGO_ETCD_ENDPOINTS"`
-	Username  string   `env:"DOCGO_ETCD_USERNAME"`
-	Password  string   `env:"DOCGO_ETCD_PASSWORD"`
-	ConfigKey string   `env:"DOCGO_ETCD_CONFIG_KEY"`
+	Endpoints []string `env:"HARAGO_ETCD_ENDPOINTS"`
+	Username  string   `env:"HARAGO_ETCD_USERNAME"`
+	Password  string   `env:"HARAGO_ETCD_PASSWORD"`
+	ConfigKey string   `env:"HARAGO_ETCD_CONFIG_KEY"`
 }
 
 func NewConfig(opts *Options) (*Config, error) {
