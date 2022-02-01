@@ -62,7 +62,7 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	streamClient, err := stream.NewStream(cfg.Nats)
+	streamClient, err := stream.NewStreamClient(cfg.Nats)
 	if err != nil {
 		log.Fatalln(err)
 	}

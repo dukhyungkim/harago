@@ -11,26 +11,26 @@ import (
 	"time"
 )
 
-type Stream struct {
+type Client struct {
 	nc      *nats.Conn
 	timeout time.Duration
 }
 
-func NewStream(cfg *config.Nats) (*Stream, error) {
+func NewStreamClient(cfg *config.Nats) (*Client, error) {
 	nc, err := nats.Connect(strings.Join(cfg.Servers, ","),
 		nats.UserInfo(cfg.Username, cfg.Password))
 	if err != nil {
 		return nil, err
 	}
 
-	return &Stream{nc: nc, timeout: cfg.Timeout}, nil
+	return &Client{nc: nc, timeout: cfg.Timeout}, nil
 }
 
-func (s *Stream) Close() {
+func (s *Client) Close() {
 	s.nc.Close()
 }
 
-func (s *Stream) PublishAction(request *pb.ActionRequest) error {
+func (s *Client) PublishAction(request *pb.ActionRequest) error {
 	msg, err := proto.Marshal(request)
 	if err != nil {
 		return err
@@ -43,7 +43,7 @@ func (s *Stream) PublishAction(request *pb.ActionRequest) error {
 	return nil
 }
 
-func (s *Stream) ClamMessage() error {
+func (s *Client) ClamResponse() error {
 	if _, err := s.nc.QueueSubscribe("handago.response", "harago", func(msg *nats.Msg) {
 		log.Println("Subject:", msg.Subject)
 		log.Println("Data:", string(msg.Data))

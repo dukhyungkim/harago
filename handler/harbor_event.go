@@ -8,10 +8,10 @@ import (
 )
 
 type HarborEventHandler struct {
-	stream *stream.Stream
+	stream *stream.Client
 }
 
-func NewHarborEventHandler(stream *stream.Stream) *HarborEventHandler {
+func NewHarborEventHandler(stream *stream.Client) *HarborEventHandler {
 	return &HarborEventHandler{stream: stream}
 }
 
