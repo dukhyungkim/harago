@@ -2,11 +2,10 @@ package stream
 
 import (
 	"fmt"
-	pb "github.com/dukhyungkim/libharago/gen/go/proto"
+	pbAct "github.com/dukhyungkim/libharago/gen/go/proto/action"
 	"github.com/nats-io/nats.go"
 	"google.golang.org/protobuf/proto"
 	"harago/config"
-	"log"
 	"strings"
 	"time"
 )
@@ -30,7 +29,7 @@ func (s *Client) Close() {
 	s.nc.Close()
 }
 
-func (s *Client) PublishAction(request *pb.ActionRequest) error {
+func (s *Client) PublishAction(request *pbAct.ActionRequest) error {
 	msg, err := proto.Marshal(request)
 	if err != nil {
 		return err
@@ -43,10 +42,11 @@ func (s *Client) PublishAction(request *pb.ActionRequest) error {
 	return nil
 }
 
-func (s *Client) ClamResponse() error {
+type ResponseHandler func(message string)
+
+func (s *Client) ClamResponse(handler ResponseHandler) error {
 	if _, err := s.nc.QueueSubscribe("handago.response", "harago", func(msg *nats.Msg) {
-		log.Println("Subject:", msg.Subject)
-		log.Println("Data:", string(msg.Data))
+		handler(string(msg.Data))
 	}); err != nil {
 		return err
 	}

@@ -69,6 +69,11 @@ func main() {
 	defer streamClient.Close()
 	log.Println("connect to nats ... success")
 
+	respHandler := handler.NewResponseHandler(gChat, repo)
+	if err = streamClient.ClamResponse(respHandler.NotifyResponse); err != nil {
+		log.Fatalln(err)
+	}
+
 	harborEventHandle := handler.NewHarborEventHandler(streamClient)
 
 	app := setup(gChat, harborEventHandle)

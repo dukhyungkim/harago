@@ -42,3 +42,9 @@ func (c *GChat) HandleMessage(event *ChatEvent) *chat.Message {
 	log.Printf("elapsed: %v", time.Since(start))
 	return chatMessage
 }
+
+func (c *GChat) SendMessage(space string, message *chat.Message) {
+	if _, err := c.service.Spaces.Messages.Create(space, message).Do(); err != nil {
+		log.Printf("Failed send message: %v\n", err)
+	}
+}
