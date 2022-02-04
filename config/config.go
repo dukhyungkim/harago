@@ -16,6 +16,7 @@ type Config struct {
 	Nats   *Nats   `yaml:"nats"`
 	DB     *DB     `yaml:"db"`
 	Harbor *Harbor `yaml:"harbor"`
+	Etcd   *Etcd   `yaml:"etcd"`
 }
 
 type Server struct {
@@ -45,10 +46,10 @@ type Harbor struct {
 }
 
 type Etcd struct {
-	Endpoints []string `env:"HARAGO_ETCD_ENDPOINTS"`
-	Username  string   `env:"HARAGO_ETCD_USERNAME"`
-	Password  string   `env:"HARAGO_ETCD_PASSWORD"`
-	ConfigKey string   `env:"HARAGO_ETCD_CONFIG_KEY"`
+	Endpoints []string `env:"HARAGO_ETCD_ENDPOINTS" yaml:"endpoints"`
+	Username  string   `env:"HARAGO_ETCD_USERNAME" yaml:"username"`
+	Password  string   `env:"HARAGO_ETCD_PASSWORD" yaml:"password"`
+	ConfigKey string   `env:"HARAGO_ETCD_CONFIG_KEY" yaml:"-"`
 }
 
 func NewConfig(opts *Options) (*Config, error) {

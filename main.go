@@ -6,10 +6,10 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"harago/cmd"
 	"harago/config"
-	"harago/db"
 	"harago/gservice"
 	"harago/gservice/gchat"
 	"harago/handler"
+	"harago/repo"
 	"harago/stream"
 	"log"
 	"net/http"
@@ -32,18 +32,25 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	repo, err := db.NewPostgres(cfg.DB)
+	db, err := repo.NewPostgres(cfg.DB)
 	if err != nil {
 		log.Fatalln(err)
 	}
 	log.Println("connect to postgres ... success")
 
 	if opts.AutoMigration {
-		if err := repo.AutoMigration(); err != nil {
+		if err := db.AutoMigration(); err != nil {
 			log.Fatalln(err)
 		}
 	}
 	log.Println("migrate to postgres ... success")
+
+	etcd, err := repo.NewEtcd(cfg.Etcd)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	defer etcd.Close()
+	log.Println("connect to etcd ... success")
 
 	gService, err := gservice.NewGService(opts.Credential)
 	if err != nil {
@@ -55,8 +62,8 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	dmHandler := handler.NewDMHandler(executor, repo)
-	roomHandler := handler.NewRoomHandler(executor, repo)
+	dmHandler := handler.NewDMHandler(executor, db)
+	roomHandler := handler.NewRoomHandler(executor, db)
 	gChat, err := gchat.NewGChat(gService, dmHandler, roomHandler)
 	if err != nil {
 		log.Fatalln(err)
@@ -69,7 +76,7 @@ func main() {
 	defer streamClient.Close()
 	log.Println("connect to nats ... success")
 
-	respHandler := handler.NewResponseHandler(gChat, repo)
+	respHandler := handler.NewResponseHandler(gChat, db)
 	if err = streamClient.ClamResponse(respHandler.NotifyResponse); err != nil {
 		log.Fatalln(err)
 	}

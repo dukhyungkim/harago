@@ -3,16 +3,16 @@ package handler
 import (
 	"google.golang.org/api/chat/v1"
 	"harago/cmd"
-	"harago/db"
 	"harago/gservice/gchat"
+	"harago/repo"
 )
 
 type RoomHandler struct {
 	cmdExecutor *cmd.Executor
-	repo        *db.DB
+	repo        *repo.DB
 }
 
-func NewRoomHandler(cmdExecutor *cmd.Executor, repo *db.DB) gchat.Handler {
+func NewRoomHandler(cmdExecutor *cmd.Executor, repo *repo.DB) gchat.Handler {
 	return &RoomHandler{cmdExecutor: cmdExecutor, repo: repo}
 }
 

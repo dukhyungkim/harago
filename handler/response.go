@@ -2,18 +2,18 @@ package handler
 
 import (
 	"google.golang.org/api/chat/v1"
-	"harago/db"
 	"harago/gservice/gchat"
+	"harago/repo"
 	"log"
 	"strings"
 )
 
 type ResponseHandler struct {
 	gChat *gchat.GChat
-	repo  *db.DB
+	repo  *repo.DB
 }
 
-func NewResponseHandler(gChat *gchat.GChat, repo *db.DB) *ResponseHandler {
+func NewResponseHandler(gChat *gchat.GChat, repo *repo.DB) *ResponseHandler {
 	return &ResponseHandler{gChat: gChat, repo: repo}
 }
 
