@@ -45,12 +45,18 @@ func main() {
 	}
 	log.Println("migrate to postgres ... success")
 
-	etcd, err := repo.NewEtcd(cfg.Etcd)
+	etcdClient, err := repo.NewEtcd(cfg.Etcd)
 	if err != nil {
 		log.Fatalln(err)
 	}
-	defer etcd.Close()
+	defer etcdClient.Close()
 	log.Println("connect to etcd ... success")
+
+	go func() {
+		for {
+			etcdClient.WatchSharedList()
+		}
+	}()
 
 	gService, err := gservice.NewGService(opts.Credential)
 	if err != nil {
@@ -81,7 +87,7 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	harborEventHandle := handler.NewHarborEventHandler(streamClient)
+	harborEventHandle := handler.NewHarborEventHandler(streamClient, etcdClient)
 
 	app := setup(gChat, harborEventHandle)
 

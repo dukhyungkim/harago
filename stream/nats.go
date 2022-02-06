@@ -1,7 +1,6 @@
 package stream
 
 import (
-	"fmt"
 	pbAct "github.com/dukhyungkim/libharago/gen/go/proto/action"
 	"github.com/nats-io/nats.go"
 	"google.golang.org/protobuf/proto"
@@ -29,13 +28,12 @@ func (s *Client) Close() {
 	s.nc.Close()
 }
 
-func (s *Client) PublishAction(request *pbAct.ActionRequest) error {
+func (s *Client) PublishAction(subject string, request *pbAct.ActionRequest) error {
 	msg, err := proto.Marshal(request)
 	if err != nil {
 		return err
 	}
 
-	subject := fmt.Sprintf("harago.action")
 	if err = s.nc.Publish(subject, msg); err != nil {
 		return err
 	}
