@@ -15,12 +15,12 @@ type cmdParams struct {
 }
 
 func newCmdParams(fields []string) (*cmdParams, error) {
-	if len(fields) < 2 {
+	if len(fields) < 1 {
 		return nil, errors.New("invalid sub command")
 	}
 
-	params := &cmdParams{SubCmd: fields[1]}
-	paramsField := fields[2:]
+	params := &cmdParams{SubCmd: fields[0]}
+	paramsField := fields[1:]
 	if len(paramsField)%2 == 1 {
 		return nil, errors.New("invalid params")
 	}

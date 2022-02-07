@@ -2,6 +2,9 @@ package common
 
 import "time"
 
-var (
+const (
 	DefaultTimeout = 5 * time.Second
+
+	SharedActionSubject  = "harago.shared.action"
+	CompanyActionSubject = "harago.company.action"
 )

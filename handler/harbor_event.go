@@ -3,6 +3,7 @@ package handler
 import (
 	harborModel "github.com/dukhyungkim/harbor-client/model"
 	pbAct "github.com/dukhyungkim/libharago/gen/go/proto/action"
+	"harago/common"
 	"harago/repo"
 	"harago/stream"
 	"log"
@@ -30,9 +31,9 @@ func (h *HarborEventHandler) HandleHarborEvent(event *harborModel.WebhookEvent) 
 	}
 	log.Println("pbAction:", request.String())
 
-	subject := "harago.shared.action"
+	subject := common.SharedActionSubject
 	if !h.etcdClient.IsShared(name) {
-		subject = "harago.company.action"
+		subject = common.CompanyActionSubject
 	}
 
 	if err := h.streamClient.PublishAction(subject, request); err != nil {

@@ -13,8 +13,8 @@ type CmdHarbor struct {
 }
 
 const (
-	cmdInfo = "info"
-	cmdList = "list"
+	subCmdInfo = "info"
+	subCmdList = "list"
 )
 
 func NewHarborCommand(harborClient *harbor.Client) *CmdHarbor {
@@ -34,15 +34,15 @@ func (c *CmdHarbor) Run(event *gchat.ChatEvent) *chat.Message {
 		return c.Help()
 	}
 
-	params, err := newCmdParams(fields)
+	params, err := newCmdParams(fields[1:])
 	if err != nil {
 		return &chat.Message{Text: err.Error()}
 	}
 
 	switch params.SubCmd {
-	case cmdList:
+	case subCmdList:
 		return c.handleList(params)
-	case cmdInfo:
+	case subCmdInfo:
 		return c.handleInfo(params)
 	default:
 		return c.Help()

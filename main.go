@@ -63,8 +63,15 @@ func main() {
 		log.Fatalln(err)
 	}
 
+	streamClient, err := stream.NewStreamClient(cfg.Nats)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	defer streamClient.Close()
+	log.Println("connect to nats ... success")
+
 	executor := cmd.NewExecutor()
-	if err = executor.LoadCommands(cfg); err != nil {
+	if err = executor.LoadCommands(cfg, streamClient); err != nil {
 		log.Fatalln(err)
 	}
 
@@ -74,13 +81,6 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
-
-	streamClient, err := stream.NewStreamClient(cfg.Nats)
-	if err != nil {
-		log.Fatalln(err)
-	}
-	defer streamClient.Close()
-	log.Println("connect to nats ... success")
 
 	respHandler := handler.NewResponseHandler(gChat, db)
 	if err = streamClient.ClamResponse(respHandler.NotifyResponse); err != nil {
