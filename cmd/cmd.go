@@ -4,13 +4,15 @@ import (
 	"fmt"
 	"github.com/dukhyungkim/harbor-client"
 	"google.golang.org/api/chat/v1"
-	cmddeploy "harago/cmd/cmd_deploy"
-	"harago/cmd/cmd_harbor"
 	"harago/common"
 	"harago/config"
 	"harago/gservice/gchat"
 	"harago/stream"
 	"strings"
+
+	"harago/cmd/cmd_deploy"
+	"harago/cmd/cmd_harbor"
+	"harago/cmd/cmd_ping"
 )
 
 type Command interface {
@@ -64,12 +66,17 @@ func (e *Executor) LoadCommands(cfg *config.Config, streamClient *stream.Client)
 		Password: cfg.Harbor.Password,
 	})
 
-	cmdHarbor := cmdharbor.NewHarborCommand(harborClient)
+	cmdPing := cmd_ping.NewDeployCommand()
+	if err := e.AddCommand(cmdPing.GetName(), cmdPing); err != nil {
+		return err
+	}
+
+	cmdHarbor := cmd_harbor.NewHarborCommand(harborClient)
 	if err := e.AddCommand(cmdHarbor.GetName(), cmdHarbor); err != nil {
 		return err
 	}
 
-	cmdDeploy := cmddeploy.NewDeployCommand(streamClient)
+	cmdDeploy := cmd_deploy.NewDeployCommand(streamClient)
 	if err := e.AddCommand(cmdDeploy.GetName(), cmdDeploy); err != nil {
 		return err
 	}

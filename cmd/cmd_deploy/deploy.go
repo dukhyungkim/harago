@@ -1,4 +1,4 @@
-package cmddeploy
+package cmd_deploy
 
 import (
 	"fmt"
@@ -10,23 +10,23 @@ import (
 	"strings"
 )
 
-type CmdHDeploy struct {
+type CmdDeploy struct {
 	name         string
 	streamClient *stream.Client
 }
 
-func NewDeployCommand(streamClient *stream.Client) *CmdHDeploy {
-	return &CmdHDeploy{
+func NewDeployCommand(streamClient *stream.Client) *CmdDeploy {
+	return &CmdDeploy{
 		name:         "/deploy",
 		streamClient: streamClient,
 	}
 }
 
-func (c *CmdHDeploy) GetName() string {
+func (c *CmdDeploy) GetName() string {
 	return c.name
 }
 
-func (c *CmdHDeploy) Run(event *gchat.ChatEvent) *chat.Message {
+func (c *CmdDeploy) Run(event *gchat.ChatEvent) *chat.Message {
 	fields := strings.Fields(event.Message.Text)
 	if fields == nil {
 		return c.Help()
@@ -70,7 +70,7 @@ func (c *CmdHDeploy) Run(event *gchat.ChatEvent) *chat.Message {
 	return &chat.Message{Text: fmt.Sprintf("publish to %s, Company: %s, ResourceURL: %s", subject, params.Company, params.ResourceURL)}
 }
 
-func (c *CmdHDeploy) Help() *chat.Message {
+func (c *CmdDeploy) Help() *chat.Message {
 	return &chat.Message{Text: "HELP!"}
 }
 

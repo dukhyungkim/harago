@@ -1,4 +1,4 @@
-package cmdharbor
+package cmd_harbor
 
 import (
 	"github.com/dukhyungkim/harbor-client"
