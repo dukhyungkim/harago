@@ -9,7 +9,7 @@ import (
 	"harago/gservice"
 	"harago/gservice/gchat"
 	"harago/handler"
-	"harago/repo"
+	"harago/repository"
 	"harago/stream"
 	"log"
 	"net/http"
@@ -32,20 +32,20 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	db, err := repo.NewPostgres(cfg.DB)
+	db, err := repository.NewPostgres(cfg.DB)
 	if err != nil {
 		log.Fatalln(err)
 	}
 	log.Println("connect to postgres ... success")
 
 	if opts.AutoMigration {
-		if err := db.AutoMigration(); err != nil {
+		if err = db.AutoMigration(); err != nil {
 			log.Fatalln(err)
 		}
 	}
 	log.Println("migrate to postgres ... success")
 
-	etcdClient, err := repo.NewEtcd(cfg.Etcd)
+	etcdClient, err := repository.NewEtcd(cfg.Etcd)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -60,31 +60,31 @@ func main() {
 
 	gService, err := gservice.NewGService(opts.Credential)
 	if err != nil {
-		log.Fatalln(err)
+		log.Println(err)
 	}
 
 	streamClient, err := stream.NewStreamClient(cfg.Nats)
 	if err != nil {
-		log.Fatalln(err)
+		log.Panicln(err)
 	}
 	defer streamClient.Close()
 	log.Println("connect to nats ... success")
 
 	executor := cmd.NewExecutor()
 	if err = executor.LoadCommands(cfg, streamClient); err != nil {
-		log.Fatalln(err)
+		log.Panicln(err)
 	}
 
 	dmHandler := handler.NewDMHandler(executor, db)
 	roomHandler := handler.NewRoomHandler(executor, db)
 	gChat, err := gchat.NewGChat(gService, dmHandler, roomHandler)
 	if err != nil {
-		log.Fatalln(err)
+		log.Panicln(err)
 	}
 
 	respHandler := handler.NewResponseHandler(gChat, db)
 	if err = streamClient.ClamResponse(respHandler.NotifyResponse); err != nil {
-		log.Fatalln(err)
+		log.Panicln(err)
 	}
 
 	harborEventHandle := handler.NewHarborEventHandler(streamClient, etcdClient)
@@ -93,7 +93,7 @@ func main() {
 
 	addr := fmt.Sprintf(":%d", cfg.Server.Port)
 	log.Printf("Server startup ... %s\n", addr)
-	log.Fatalln(app.Listen(addr))
+	log.Panicln(app.Listen(addr))
 }
 
 func setup(gChat *gchat.GChat, harborEventHandler *handler.HarborEventHandler) *fiber.App {

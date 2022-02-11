@@ -31,7 +31,7 @@ linters:
     - goconst
     - gocritic
     - gofmt
-    - gomnd
+#    - gomnd
     - gocyclo
     - gosec
     - gosimple

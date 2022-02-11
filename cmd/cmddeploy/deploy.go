@@ -1,4 +1,4 @@
-package cmd_deploy
+package cmddeploy
 
 import (
 	"fmt"

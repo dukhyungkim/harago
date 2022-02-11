@@ -1,4 +1,4 @@
-package cmd_deploy
+package cmddeploy
 
 import (
 	"errors"
@@ -15,7 +15,7 @@ func newCmdParams(fields []string) (*cmdParams, error) {
 	}
 
 	params := &cmdParams{}
-	for i := 0; i < len(fields); i += 1 {
+	for i := 0; i < len(fields); i++ {
 		if fields[i] == "company" {
 			if i+1 >= len(fields) {
 				return nil, errors.New("invalid company")

@@ -1,4 +1,4 @@
-package cmd_ping
+package cmdping
 
 import (
 	"google.golang.org/api/chat/v1"

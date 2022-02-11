@@ -5,15 +5,15 @@ import (
 	"harago/cmd"
 	"harago/entity"
 	"harago/gservice/gchat"
-	"harago/repo"
+	"harago/repository"
 )
 
 type DMHandler struct {
 	cmdExecutor *cmd.Executor
-	repo        *repo.DB
+	repo        *repository.DB
 }
 
-func NewDMHandler(cmdExecutor *cmd.Executor, repo *repo.DB) gchat.Handler {
+func NewDMHandler(cmdExecutor *cmd.Executor, repo *repository.DB) gchat.Handler {
 	return &DMHandler{cmdExecutor: cmdExecutor, repo: repo}
 }
 

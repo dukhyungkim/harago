@@ -4,17 +4,17 @@ import (
 	pbAct "github.com/dukhyungkim/libharago/gen/go/proto/action"
 	"google.golang.org/api/chat/v1"
 	"harago/gservice/gchat"
-	"harago/repo"
+	"harago/repository"
 	"log"
 	"strings"
 )
 
 type ResponseHandler struct {
 	gChat *gchat.GChat
-	repo  *repo.DB
+	repo  *repository.DB
 }
 
-func NewResponseHandler(gChat *gchat.GChat, repo *repo.DB) *ResponseHandler {
+func NewResponseHandler(gChat *gchat.GChat, repo *repository.DB) *ResponseHandler {
 	return &ResponseHandler{gChat: gChat, repo: repo}
 }
 
@@ -40,7 +40,7 @@ func (h *ResponseHandler) broadcastMessage(text string) {
 	}
 }
 
-func (h *ResponseHandler) sendMessageToSpace(space string, text string) {
+func (h *ResponseHandler) sendMessageToSpace(space, text string) {
 	msg := formatMessage(text)
 
 	go h.gChat.SendMessage(space, msg)

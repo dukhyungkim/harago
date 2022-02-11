@@ -4,17 +4,17 @@ import (
 	harborModel "github.com/dukhyungkim/harbor-client/model"
 	pbAct "github.com/dukhyungkim/libharago/gen/go/proto/action"
 	"harago/common"
-	"harago/repo"
+	"harago/repository"
 	"harago/stream"
 	"log"
 )
 
 type HarborEventHandler struct {
 	streamClient *stream.Client
-	etcdClient   *repo.Etcd
+	etcdClient   *repository.Etcd
 }
 
-func NewHarborEventHandler(streamClient *stream.Client, etcdClient *repo.Etcd) *HarborEventHandler {
+func NewHarborEventHandler(streamClient *stream.Client, etcdClient *repository.Etcd) *HarborEventHandler {
 	return &HarborEventHandler{streamClient: streamClient, etcdClient: etcdClient}
 }
 

@@ -35,7 +35,7 @@ func (s *Client) PublishAction(subject string, request *pbAct.ActionRequest) err
 		return err
 	}
 
-	if err = s.nc.Publish(subject, msg); err != nil {
+	if err := s.nc.Publish(subject, msg); err != nil {
 		return err
 	}
 	return nil

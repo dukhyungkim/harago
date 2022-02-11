@@ -1,4 +1,4 @@
-package cmd_harbor
+package cmdharbor
 
 import (
 	"fmt"

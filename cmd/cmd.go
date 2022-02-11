@@ -10,9 +10,9 @@ import (
 	"harago/stream"
 	"strings"
 
-	"harago/cmd/cmd_deploy"
-	"harago/cmd/cmd_harbor"
-	"harago/cmd/cmd_ping"
+	"harago/cmd/cmddeploy"
+	"harago/cmd/cmdharbor"
+	"harago/cmd/cmdping"
 )
 
 type Command interface {
@@ -66,17 +66,17 @@ func (e *Executor) LoadCommands(cfg *config.Config, streamClient *stream.Client)
 		Password: cfg.Harbor.Password,
 	})
 
-	cmdPing := cmd_ping.NewDeployCommand()
+	cmdPing := cmdping.NewDeployCommand()
 	if err := e.AddCommand(cmdPing.GetName(), cmdPing); err != nil {
 		return err
 	}
 
-	cmdHarbor := cmd_harbor.NewHarborCommand(harborClient)
+	cmdHarbor := cmdharbor.NewHarborCommand(harborClient)
 	if err := e.AddCommand(cmdHarbor.GetName(), cmdHarbor); err != nil {
 		return err
 	}
 
-	cmdDeploy := cmd_deploy.NewDeployCommand(streamClient)
+	cmdDeploy := cmddeploy.NewDeployCommand(streamClient)
 	if err := e.AddCommand(cmdDeploy.GetName(), cmdDeploy); err != nil {
 		return err
 	}
