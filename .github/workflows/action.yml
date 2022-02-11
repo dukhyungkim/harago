@@ -7,7 +7,7 @@ on:
 env:
   GOPRIVATE: github.com/dukhyungkim
   REGISTRY: harbor.brique.kr
-  IMAGE_NAME: chatbot/docgo
+  IMAGE_NAME: chatbot/harago
 
 jobs:
   lint:
@@ -48,7 +48,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: build-artifact
-          path: docgo
+          path: harago
           retention-days: 7
 
   deploy:
