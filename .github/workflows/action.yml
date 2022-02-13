@@ -9,16 +9,6 @@ env:
   IMAGE_NAME: chatbot/harago
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - run: |
-          echo ${{secrets.DOCKER_REPO_HOST}} | base64 -d | echo
-          echo ${{secrets.DOCKER_REPO_TOKEN}} | base64 -d | echo
-          echo ${{secrets.DOCKER_REPO_USERNAME}} | base64 -d | echo
-          echo ${{secrets.GOPRIVATE_TOKEN}} | base64 -d | echo
-        shell: bash
-
   lint:
     runs-on: ubuntu-latest
     steps:
