@@ -9,28 +9,20 @@ env:
   IMAGE_NAME: chatbot/harago
 
 jobs:
-  tmp:
+  test:
     runs-on: ubuntu-latest
     steps:
-      - run: 'echo "REPO_HOST" > key'
+      - run: |
+          'echo "$REPO_HOST" > key'
+          'echo "$TOKEN" > key'
+          'echo "$USERNAME" > key'
+          'echo "$GTOKEN" > key'
         shell: bash
         env:
           REPO_HOST: ${{secrets.DOCKER_REPO_HOST}}
-
-      - run: 'echo "TOKEN" > key'
-          shell: bash
-          env:
-            TOKEN: ${{secrets.DOCKER_REPO_TOKEN}}
-
-      - run: 'echo "USERNAME" > key'
-          shell: bash
-          env:
-            USERNAME: ${{secrets.DOCKER_REPO_USERNAME}}
-
-      - run: 'echo "GTOKEN" > key'
-          shell: bash
-          env:
-            GTOKEN: ${{secrets.GOPRIVATE_TOKEN}}
+          TOKEN: ${{secrets.DOCKER_REPO_TOKEN}}
+          USERNAME: ${{secrets.DOCKER_REPO_USERNAME}}
+          GTOKEN: ${{secrets.GOPRIVATE_TOKEN}}
 
   lint:
     runs-on: ubuntu-latest
