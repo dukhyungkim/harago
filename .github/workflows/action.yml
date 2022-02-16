@@ -43,11 +43,14 @@ jobs:
       - name: Run build
         run: CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build
 
+      - name: Tar artifact
+        run: tar -cvf artifact.tar harago
+
       - name: Upload Artifact
         uses: actions/upload-artifact@v2
         with:
           name: build-artifact
-          path: harago
+          path: harago.tar
           retention-days: 7
 
   deploy:
@@ -60,6 +63,9 @@ jobs:
       uses: actions/download-artifact@v2
       with:
         name: build-artifact
+
+    - name: Untar artifact
+      run: tar -xvf artifact.tar
 
     - name: Log in to the Container registry
       uses: docker/login-action@v1
