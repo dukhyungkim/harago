@@ -49,9 +49,10 @@ func (h *ResponseHandler) sendMessageToSpace(space, text string) {
 func formatMessage(message string) *chat.Message {
 	sb := strings.Builder{}
 
-	sb.WriteString("```\n")
+	sb.WriteString("message from handago\n")
+	sb.WriteString("```")
 	sb.WriteString(message)
-	sb.WriteString("```\n")
+	sb.WriteString("```")
 
 	return &chat.Message{Text: sb.String()}
 }
