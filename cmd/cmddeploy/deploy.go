@@ -47,7 +47,7 @@ func (c *CmdDeploy) Run(event *gchat.ChatEvent) *chat.Message {
 
 	subject := common.SharedActionSubject
 	if params.Company != "" {
-		subject = fmt.Sprintf(common.CompanyActionSubject, params.Company)
+		subject = fmt.Sprintf(common.SpecificCompanyActionSubject, params.Company)
 	}
 
 	pbAction := &pbAct.ActionRequest{
