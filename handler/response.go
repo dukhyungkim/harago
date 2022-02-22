@@ -66,8 +66,8 @@ func formatDeployResponse(response *pbAct.ActionResponse) *chat.Message {
 	deployResp := response.GetRespDeploy()
 
 	sb := strings.Builder{}
-	sb.WriteString(fmt.Sprintf("%s - Done from %s with %s\n",
-		response.GetType().String(), deployResp.GetCompany(), deployResp.GetResourceUrl()))
+	sb.WriteString(fmt.Sprintf("%s - %s response from %s with %s\n",
+		response.GetType().String(), deployResp.GetCompany(), deployResp.Host, deployResp.GetResourceUrl()))
 	sb.WriteString("```")
 	sb.WriteString(deployResp.GetText())
 	sb.WriteString("```")

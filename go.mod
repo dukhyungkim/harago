@@ -22,7 +22,7 @@ require (
 	github.com/andybalholm/brotli v1.0.2 // indirect
 	github.com/coreos/go-semver v0.3.0 // indirect
 	github.com/coreos/go-systemd/v22 v22.3.2 // indirect
-	github.com/dukhyungkim/libharago v0.0.0-20220221122744-aef9c2eac9bc // indirect
+	github.com/dukhyungkim/libharago v0.0.0-20220222141021-d0388c62549b // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
