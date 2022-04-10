@@ -2,8 +2,6 @@ package main
 
 import (
 	"fmt"
-	harborModel "github.com/dukhyungkim/harbor-client/model"
-	"github.com/gofiber/fiber/v2"
 	"harago/cmd"
 	"harago/config"
 	"harago/gservice"
@@ -13,6 +11,9 @@ import (
 	"harago/stream"
 	"log"
 	"net/http"
+
+	harborModel "github.com/dukhyungkim/harbor-client/model"
+	"github.com/gofiber/fiber/v2"
 )
 
 func init() {
@@ -37,13 +38,6 @@ func main() {
 		log.Fatalln(err)
 	}
 	log.Println("connect to postgres ... success")
-
-	if opts.AutoMigration {
-		if err = db.AutoMigration(); err != nil {
-			log.Fatalln(err)
-		}
-	}
-	log.Println("migrate to postgres ... success")
 
 	etcdClient, err := repository.NewEtcd(cfg.Etcd)
 	if err != nil {
@@ -71,7 +65,7 @@ func main() {
 	log.Println("connect to nats ... success")
 
 	executor := cmd.NewExecutor()
-	if err = executor.LoadCommands(cfg, streamClient); err != nil {
+	if err = executor.LoadCommands(cfg, streamClient, db); err != nil {
 		log.Panicln(err)
 	}
 

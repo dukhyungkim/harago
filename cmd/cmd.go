@@ -2,13 +2,16 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/dukhyungkim/harbor-client"
-	"google.golang.org/api/chat/v1"
+	"harago/cmd/cmdcomponent"
 	"harago/common"
 	"harago/config"
 	"harago/gservice/gchat"
+	"harago/repository"
 	"harago/stream"
 	"strings"
+
+	"github.com/dukhyungkim/harbor-client"
+	"google.golang.org/api/chat/v1"
 
 	"harago/cmd/cmddeploy"
 	"harago/cmd/cmdharbor"
@@ -59,7 +62,7 @@ func (e *Executor) Run(event *gchat.ChatEvent) *chat.Message {
 	return command.Run(event)
 }
 
-func (e *Executor) LoadCommands(cfg *config.Config, streamClient *stream.Client) error {
+func (e *Executor) LoadCommands(cfg *config.Config, streamClient *stream.Client, db *repository.DB) error {
 	harborClient := harbor.NewClient(&harbor.Config{
 		URL:      cfg.Harbor.URL,
 		Username: cfg.Harbor.Username,
@@ -78,6 +81,11 @@ func (e *Executor) LoadCommands(cfg *config.Config, streamClient *stream.Client)
 
 	cmdDeploy := cmddeploy.NewDeployCommand(streamClient)
 	if err := e.AddCommand(cmdDeploy.GetName(), cmdDeploy); err != nil {
+		return err
+	}
+
+	cmdSetComponent := cmdcomponent.NewCmdSetComponent(db)
+	if err := e.AddCommand(cmdSetComponent.GetName(), cmdSetComponent); err != nil {
 		return err
 	}
 
