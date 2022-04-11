@@ -9,8 +9,8 @@ import (
 
 func (db *DB) UpsertComponentType(ct *entity.ComponentType) error {
 	return db.client.Clauses(clause.OnConflict{
-		Columns:   []clause.Column{{Name: "company"}, {Name: "component"}},
-		DoUpdates: clause.AssignmentColumns([]string{"selection"}),
+		Columns:   []clause.Column{{Name: "company"}, {Name: "type"}},
+		DoUpdates: clause.AssignmentColumns([]string{"component"}),
 	}).Create(ct).Error
 }
 

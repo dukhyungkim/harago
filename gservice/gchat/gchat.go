@@ -2,12 +2,13 @@ package gchat
 
 import (
 	"context"
-	"google.golang.org/api/chat/v1"
-	"google.golang.org/api/option"
 	"harago/common"
 	"harago/gservice"
 	"log"
 	"time"
+
+	"google.golang.org/api/chat/v1"
+	"google.golang.org/api/option"
 )
 
 type GChat struct {
@@ -45,6 +46,6 @@ func (c *GChat) HandleMessage(event *ChatEvent) *chat.Message {
 
 func (c *GChat) SendMessage(space string, message *chat.Message) {
 	if _, err := c.service.Spaces.Messages.Create(space, message).Do(); err != nil {
-		log.Printf("Failed send message: %v\n", err)
+		log.Printf("failed send message: %v\n", err)
 	}
 }

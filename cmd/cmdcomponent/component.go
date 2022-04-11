@@ -1,8 +1,11 @@
 package cmdcomponent
 
 import (
+	"fmt"
+	"harago/entity"
 	"harago/gservice/gchat"
 	"harago/repository"
+	"log"
 	"strings"
 
 	"github.com/jessevdk/go-flags"
@@ -10,28 +13,14 @@ import (
 )
 
 type CmdComponent struct {
-	name   string
-	db     *repository.DB
-	parser *flags.Parser
+	name string
+	db   *repository.DB
 }
 
-const (
-	subCmdSet    = "set"
-	subCmdList   = "list"
-	subCmdRemove = "rm"
-	subCmdHelp   = "help"
-)
-
 func NewCmdSetComponent(db *repository.DB) *CmdComponent {
-	parser := flags.NewParser(nil, flags.Default)
-
-	var setCommand SetCommand
-	parser.AddCommand(subCmdSet, "123", "seeeeeet", &setCommand)
-
 	return &CmdComponent{
-		name:   "/component",
-		db:     db,
-		parser: parser,
+		name: "/component",
+		db:   db,
 	}
 }
 
@@ -39,14 +28,21 @@ func (c *CmdComponent) GetName() string {
 	return c.name
 }
 
-type subCmd struct {
-	Set *struct {
-		Company string `long:"company"`
-		Type    string `long:"type"`
-	} `command:"set"`
-	List *struct{} `command:"list"`
-	//Remove string `long:"remove"`
-	//Help   string `long:"help"`
+const (
+	subCmdSet    = "set"
+	subCmdList   = "list"
+	subCmdRemove = "remove"
+)
+
+type SubCmdOpts struct {
+	Company string `long:"company"`
+	Type    string `long:"type"`
+}
+
+type SubCmd struct {
+	Set    SubCmdOpts `command:"set"`
+	List   struct{}   `command:"list" alias:"ls"`
+	Remove SubCmdOpts `command:"remove" alias:"rm"`
 }
 
 func (c *CmdComponent) Run(event *gchat.ChatEvent) *chat.Message {
@@ -55,23 +51,50 @@ func (c *CmdComponent) Run(event *gchat.ChatEvent) *chat.Message {
 		return c.Help()
 	}
 
-	//var opts subCmd
-	//args, err := flags.ParseArgs(&opts, fields[1:])
-	//if err != nil {
-	//	return &chat.Message{Text: err.Error()}
-	//}
-	//
-	//return &chat.Message{Text: fmt.Sprintf("opts: %+#v, args: %+#v", opts, args)}
+	var subCmd SubCmd
+	parser := flags.NewParser(&subCmd, flags.HelpFlag|flags.PassDoubleDash)
 
-	_, err := c.parser.ParseArgs(fields[1:])
+	args, err := parser.ParseArgs(fields[1:])
 	if err != nil {
 		return &chat.Message{Text: err.Error()}
 	}
+
+	switch parser.Active.Name {
+	case subCmdSet:
+		if len(args) == 0 {
+			return &chat.Message{Text: "not enough argument"}
+		}
+		ct := entity.ComponentType{Company: subCmd.Set.Company, Type: subCmd.Set.Type, Component: args[0]}
+		err = c.db.UpsertComponentType(&ct)
+		if err != nil {
+			return &chat.Message{Text: err.Error()}
+		}
+
+	case subCmdList:
+		cts, err := c.db.ListComponentTypes()
+		if err != nil {
+			return &chat.Message{Text: err.Error()}
+		}
+		var sb strings.Builder
+		for _, ct := range cts {
+			sb.WriteString(fmt.Sprintf("Company: %s, Type: %s, Component: %s, CreatedAt: %s, UpdatedAt: %s\n",
+				ct.Company, ct.Type, ct.Component, ct.CreatedAt.Local().String(), ct.UpdatedAt.Local().String()),
+			)
+		}
+		return &chat.Message{Text: sb.String()}
+
+	case subCmdRemove:
+		ct := entity.ComponentType{Company: subCmd.Remove.Company, Type: subCmd.Remove.Type}
+		err = c.db.DeleteComponentType(&ct)
+		if err != nil {
+			return &chat.Message{Text: err.Error()}
+		}
+		log.Println("remove")
+	}
+
 	return &chat.Message{Text: "OK"}
 }
 
 func (c *CmdComponent) Help() *chat.Message {
-	var sb strings.Builder
-	c.parser.WriteHelp(&sb)
-	return &chat.Message{Text: sb.String()}
+	return &chat.Message{Text: "HELP"}
 }

@@ -2,6 +2,7 @@ package gchat
 
 import (
 	"fmt"
+
 	"google.golang.org/api/chat/v1"
 )
 
@@ -16,8 +17,8 @@ type ChatEvent struct {
 }
 
 func (c *ChatEvent) String() string {
-	return fmt.Sprintf("EventType: %s, EventTime: %v, SpaceType: %s, UserName: %s, Email: %s",
-		c.Type, c.EventTime, c.Space.Type, c.User.DisplayName, c.User.Email)
+	return fmt.Sprintf("EventType: %s, EventTime: %v, SpaceType: %s, UserName: %s, Email: %s, Message: %s",
+		c.Type, c.EventTime, c.Space.Type, c.User.DisplayName, c.User.Email, c.Message.Text)
 }
 
 // based chat.User
