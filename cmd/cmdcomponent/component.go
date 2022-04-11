@@ -71,7 +71,8 @@ func (c *CmdComponent) Run(event *gchat.ChatEvent) *chat.Message {
 		}
 
 	case subCmdList:
-		cts, err := c.db.ListComponentTypes()
+		var cts []*entity.ComponentType
+		cts, err = c.db.ListComponentTypes()
 		if err != nil {
 			return &chat.Message{Text: err.Error()}
 		}
