@@ -1,11 +1,9 @@
 package cmdcomponent
 
 import (
-	"fmt"
 	"harago/entity"
 	"harago/gservice/gchat"
 	"harago/repository"
-	"log"
 	"strings"
 
 	"github.com/jessevdk/go-flags"
@@ -76,13 +74,12 @@ func (c *CmdComponent) Run(event *gchat.ChatEvent) *chat.Message {
 		if err != nil {
 			return &chat.Message{Text: err.Error()}
 		}
-		var sb strings.Builder
-		for _, ct := range cts {
-			sb.WriteString(fmt.Sprintf("Company: %s, Type: %s, Component: %s, CreatedAt: %s, UpdatedAt: %s\n",
-				ct.Company, ct.Type, ct.Component, ct.CreatedAt.Local().String(), ct.UpdatedAt.Local().String()),
-			)
+
+		cards := make([]*chat.Card, len(cts))
+		for i := range cts {
+			cards[i] = cts[i].ToCard()
 		}
-		return &chat.Message{Text: sb.String()}
+		return &chat.Message{Text: "List of ComponentTypes", Cards: cards}
 
 	case subCmdRemove:
 		ct := entity.ComponentType{Company: subCmd.Remove.Company, Type: subCmd.Remove.Type}
@@ -90,7 +87,6 @@ func (c *CmdComponent) Run(event *gchat.ChatEvent) *chat.Message {
 		if err != nil {
 			return &chat.Message{Text: err.Error()}
 		}
-		log.Println("remove")
 	}
 
 	return &chat.Message{Text: "OK"}
