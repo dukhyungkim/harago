@@ -1,24 +1,18 @@
 package entity
 
 import (
-	"time"
-
 	"google.golang.org/api/chat/v1"
 )
 
 type ComponentType struct {
 	ID        uint
-	Company   string `gorm:"size:32;not null;default:null"`
-	Type      string `gorm:"size:16;not null;default:null"`
-	Component string `gorm:"size:16;not null;default:null"`
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	Type      string `gorm:"size:32;not null;default:null"`
+	Component string `gorm:"size:32;not null;default:null"`
 }
 
 func (c *ComponentType) UniqueFilter() map[string]interface{} {
 	filter := make(map[string]interface{})
-	filter["company"] = c.Company
-	filter["type"] = c.Type
+	filter["component"] = c.Component
 	return filter
 }
 
@@ -29,20 +23,6 @@ func (c *ComponentType) ToCard() *chat.Card {
 				Widgets: []*chat.WidgetMarkup{
 					{
 						KeyValue: &chat.KeyValue{
-							TopLabel:         "company",
-							Content:          c.Company,
-							ContentMultiline: true,
-						},
-					},
-					{
-						KeyValue: &chat.KeyValue{
-							TopLabel:         "type",
-							Content:          c.Type,
-							ContentMultiline: true,
-						},
-					},
-					{
-						KeyValue: &chat.KeyValue{
 							TopLabel:         "component",
 							Content:          c.Component,
 							ContentMultiline: true,
@@ -50,15 +30,8 @@ func (c *ComponentType) ToCard() *chat.Card {
 					},
 					{
 						KeyValue: &chat.KeyValue{
-							TopLabel:         "created_at",
-							Content:          c.CreatedAt.Local().String(),
-							ContentMultiline: true,
-						},
-					},
-					{
-						KeyValue: &chat.KeyValue{
-							TopLabel:         "updated_at",
-							Content:          c.UpdatedAt.Local().String(),
+							TopLabel:         "type",
+							Content:          c.Type,
 							ContentMultiline: true,
 						},
 					},

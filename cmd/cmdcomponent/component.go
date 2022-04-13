@@ -1,7 +1,6 @@
 package cmdcomponent
 
 import (
-	"harago/entity"
 	"harago/gservice/gchat"
 	"harago/repository"
 	"strings"
@@ -26,22 +25,26 @@ func (c *CmdComponent) GetName() string {
 	return c.name
 }
 
+type subCmd struct {
+	Mapping Mapping `command:"mapping" alias:"m"`
+	Type    Type    `command:"type" alias:"t"`
+}
+
+type cmdRunHelper struct {
+	cmd  string
+	args []string
+	db   *repository.DB
+}
+
 const (
+	subCmdMapping = "mapping"
+	subCmdType    = "type"
+
 	subCmdSet    = "set"
+	subCmdAdd    = "add"
 	subCmdList   = "list"
 	subCmdRemove = "remove"
 )
-
-type SubCmdOpts struct {
-	Company string `long:"company"`
-	Type    string `long:"type"`
-}
-
-type SubCmd struct {
-	Set    SubCmdOpts `command:"set"`
-	List   struct{}   `command:"list" alias:"ls"`
-	Remove SubCmdOpts `command:"remove" alias:"rm"`
-}
 
 func (c *CmdComponent) Run(event *gchat.ChatEvent) *chat.Message {
 	fields := strings.Fields(event.Message.Text)
@@ -49,47 +52,30 @@ func (c *CmdComponent) Run(event *gchat.ChatEvent) *chat.Message {
 		return c.Help()
 	}
 
-	var subCmd SubCmd
-	parser := flags.NewParser(&subCmd, flags.HelpFlag|flags.PassDoubleDash)
+	var sc subCmd
+	parser := flags.NewParser(&sc, flags.HelpFlag|flags.PassDoubleDash)
 
 	args, err := parser.ParseArgs(fields[1:])
 	if err != nil {
 		return &chat.Message{Text: err.Error()}
 	}
 
-	switch parser.Active.Name {
-	case subCmdSet:
-		if len(args) == 0 {
-			return &chat.Message{Text: "not enough argument"}
-		}
-		ct := entity.ComponentType{Company: subCmd.Set.Company, Type: subCmd.Set.Type, Component: args[0]}
-		err = c.db.UpsertComponentType(&ct)
-		if err != nil {
-			return &chat.Message{Text: err.Error()}
-		}
-
-	case subCmdList:
-		var cts []*entity.ComponentType
-		cts, err = c.db.ListComponentTypes()
-		if err != nil {
-			return &chat.Message{Text: err.Error()}
-		}
-
-		cards := make([]*chat.Card, len(cts))
-		for i := range cts {
-			cards[i] = cts[i].ToCard()
-		}
-		return &chat.Message{Text: "List of ComponentTypes", Cards: cards}
-
-	case subCmdRemove:
-		ct := entity.ComponentType{Company: subCmd.Remove.Company, Type: subCmd.Remove.Type}
-		err = c.db.DeleteComponentType(&ct)
-		if err != nil {
-			return &chat.Message{Text: err.Error()}
-		}
+	helper := &cmdRunHelper{
+		cmd:  parser.Active.Active.Name,
+		args: args,
+		db:   c.db,
 	}
 
-	return &chat.Message{Text: "OK"}
+	switch parser.Active.Name {
+	case subCmdMapping:
+		return sc.Mapping.Run(helper)
+
+	case subCmdType:
+		return sc.Type.Run(helper)
+
+	default:
+		return &chat.Message{Text: "not found command - cannot be here"}
+	}
 }
 
 func (c *CmdComponent) Help() *chat.Message {
