@@ -2,12 +2,14 @@ package cmddeploy
 
 import (
 	"fmt"
-	pbAct "github.com/dukhyungkim/libharago/gen/go/proto/action"
-	"google.golang.org/api/chat/v1"
 	"harago/common"
 	"harago/gservice/gchat"
 	"harago/stream"
 	"strings"
+
+	pbAct "github.com/dukhyungkim/libharago/gen/go/proto/action"
+	"github.com/jessevdk/go-flags"
+	"google.golang.org/api/chat/v1"
 )
 
 type CmdDeploy struct {
@@ -26,28 +28,32 @@ func (c *CmdDeploy) GetName() string {
 	return c.name
 }
 
+type Opts struct {
+	Company string `long:"company" short:"c"`
+}
+
 func (c *CmdDeploy) Run(event *gchat.ChatEvent) *chat.Message {
 	fields := strings.Fields(event.Message.Text)
 	if fields == nil {
 		return c.Help()
 	}
 
-	params, err := newCmdParams(fields[1:])
+	var opts Opts
+	parser := flags.NewParser(&opts, flags.HelpFlag|flags.PassDoubleDash)
+
+	args, err := parser.ParseArgs(fields[1:])
 	if err != nil {
 		return &chat.Message{Text: err.Error()}
 	}
 
-	if params.ResourceURL == "" {
-		return &chat.Message{Text: "empty ResourceURL"}
-	}
-
-	if len(strings.Split(params.ResourceURL, ":")) != 2 {
+	if len(args) == 0 {
 		return &chat.Message{Text: "invalid ResourceURL"}
 	}
+	resourceURL := args[0]
 
 	subject := common.SharedActionSubject
-	if params.Company != "" {
-		subject = fmt.Sprintf(common.SpecificCompanyActionSubject, params.Company)
+	if opts.Company != "" {
+		subject = fmt.Sprintf(common.SpecificCompanyActionSubject, opts.Company)
 	}
 
 	pbAction := &pbAct.ActionRequest{
@@ -55,8 +61,8 @@ func (c *CmdDeploy) Run(event *gchat.ChatEvent) *chat.Message {
 		Space: event.Space.Name,
 		Request_OneOf: &pbAct.ActionRequest_ReqDeploy{
 			ReqDeploy: &pbAct.ActionRequest_DeployRequest{
-				Name:        parseName(params.ResourceURL),
-				ResourceUrl: params.ResourceURL,
+				Name:        parseName(resourceURL),
+				ResourceUrl: resourceURL,
 			},
 		},
 	}
@@ -65,9 +71,9 @@ func (c *CmdDeploy) Run(event *gchat.ChatEvent) *chat.Message {
 	}
 
 	if subject == common.SharedActionSubject {
-		return &chat.Message{Text: fmt.Sprintf("publish to %s, ResourceURL: %s", subject, params.ResourceURL)}
+		return &chat.Message{Text: fmt.Sprintf("publish to %s, ResourceURL: %s", subject, resourceURL)}
 	}
-	return &chat.Message{Text: fmt.Sprintf("publish to %s, Company: %s, ResourceURL: %s", subject, params.Company, params.ResourceURL)}
+	return &chat.Message{Text: fmt.Sprintf("publish to %s, Company: %s, ResourceURL: %s", subject, opts.Company, resourceURL)}
 }
 
 func (c *CmdDeploy) Help() *chat.Message {

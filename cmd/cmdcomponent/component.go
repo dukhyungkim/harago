@@ -25,7 +25,7 @@ func (c *CmdComponent) GetName() string {
 	return c.name
 }
 
-type subCmd struct {
+type SubCmd struct {
 	Mapping Mapping `command:"mapping" alias:"m"`
 	Type    Type    `command:"type" alias:"t"`
 }
@@ -52,8 +52,8 @@ func (c *CmdComponent) Run(event *gchat.ChatEvent) *chat.Message {
 		return c.Help()
 	}
 
-	var sc subCmd
-	parser := flags.NewParser(&sc, flags.HelpFlag|flags.PassDoubleDash)
+	var subCmd SubCmd
+	parser := flags.NewParser(&subCmd, flags.HelpFlag|flags.PassDoubleDash)
 
 	args, err := parser.ParseArgs(fields[1:])
 	if err != nil {
@@ -68,10 +68,10 @@ func (c *CmdComponent) Run(event *gchat.ChatEvent) *chat.Message {
 
 	switch parser.Active.Name {
 	case subCmdMapping:
-		return sc.Mapping.Run(helper)
+		return subCmd.Mapping.Run(helper)
 
 	case subCmdType:
-		return sc.Type.Run(helper)
+		return subCmd.Type.Run(helper)
 
 	default:
 		return &chat.Message{Text: "not found command - cannot be here"}
