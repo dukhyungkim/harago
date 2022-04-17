@@ -1,21 +1,18 @@
 package cmdharbor
 
 import (
-	"github.com/dukhyungkim/harbor-client"
-	"google.golang.org/api/chat/v1"
 	"harago/gservice/gchat"
 	"strings"
+
+	"github.com/dukhyungkim/harbor-client"
+	"github.com/jessevdk/go-flags"
+	"google.golang.org/api/chat/v1"
 )
 
 type CmdHarbor struct {
 	name         string
 	harborClient *harbor.Client
 }
-
-const (
-	subCmdInfo = "info"
-	subCmdList = "list"
-)
 
 func NewHarborCommand(harborClient *harbor.Client) *CmdHarbor {
 	return &CmdHarbor{
@@ -28,22 +25,43 @@ func (c *CmdHarbor) GetName() string {
 	return c.name
 }
 
+type Opts struct {
+	Info SubCmdOpts `command:"info"`
+	List SubCmdOpts `command:"list" alias:"ls"`
+}
+
+type SubCmdOpts struct {
+	ProjectName  string `long:"project" alias:"proj"`
+	RepoName     string `long:"repository" alias:"repo"`
+	ArtifactName string `long:"artifact"`
+	Page         int64  `long:"page"`
+	Size         int64  `long:"size"`
+}
+
+const (
+	subCmdInfo = "info"
+	subCmdList = "list"
+)
+
 func (c *CmdHarbor) Run(event *gchat.ChatEvent) *chat.Message {
 	fields := strings.Fields(event.Message.Text)
 	if fields == nil {
 		return c.Help()
 	}
 
-	params, err := newCmdParams(fields[1:])
+	var opts Opts
+	parser := flags.NewParser(&opts, flags.HelpFlag|flags.PassDoubleDash)
+
+	_, err := parser.ParseArgs(fields[1:])
 	if err != nil {
 		return &chat.Message{Text: err.Error()}
 	}
 
-	switch params.SubCmd {
+	switch parser.Active.Name {
 	case subCmdList:
-		return c.handleList(params)
+		return c.handleList(&opts.List)
 	case subCmdInfo:
-		return c.handleInfo(params)
+		return c.handleInfo(&opts.Info)
 	default:
 		return c.Help()
 	}

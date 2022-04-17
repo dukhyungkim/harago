@@ -2,33 +2,34 @@ package cmdharbor
 
 import (
 	"fmt"
+	"harago/common"
+	"harago/util"
+
 	"github.com/dukhyungkim/harbor-client"
 	harborModel "github.com/dukhyungkim/harbor-client/model"
 	"google.golang.org/api/chat/v1"
-	"harago/common"
-	"harago/util"
 )
 
-func (c *CmdHarbor) handleList(params *cmdParams) *chat.Message {
-	if params.RepoName != "" {
-		return listArtifacts(c.harborClient, params)
+func (c *CmdHarbor) handleList(opts *SubCmdOpts) *chat.Message {
+	if opts.RepoName != "" {
+		return listArtifacts(c.harborClient, opts)
 	}
 
-	if params.ProjectName != "" {
-		return listRepositories(c.harborClient, params)
+	if opts.ProjectName != "" {
+		return listRepositories(c.harborClient, opts)
 	}
 
-	return listProjects(c.harborClient, params)
+	return listProjects(c.harborClient, opts)
 }
 
-func listProjects(client *harbor.Client, params *cmdParams) *chat.Message {
+func listProjects(client *harbor.Client, opts *SubCmdOpts) *chat.Message {
 	projectsParams := harborModel.NewListProjectsParams()
-	if params.Page != 0 {
-		projectsParams.Page = params.Page
+	if opts.Page != 0 {
+		projectsParams.Page = opts.Page
 	}
 	projectsParams.PageSize = 15
-	if params.Size != 0 {
-		projectsParams.PageSize = params.Size
+	if opts.Size != 0 {
+		projectsParams.PageSize = opts.Size
 	}
 
 	projects, err := client.ListProjects(projectsParams)
@@ -43,17 +44,17 @@ func listProjects(client *harbor.Client, params *cmdParams) *chat.Message {
 	return &chat.Message{Text: "list of projects", Cards: cards}
 }
 
-func listRepositories(client *harbor.Client, params *cmdParams) *chat.Message {
+func listRepositories(client *harbor.Client, opts *SubCmdOpts) *chat.Message {
 	repositoriesParams := harborModel.NewListRepositoriesParams()
-	if params.Page != 0 {
-		repositoriesParams.Page = params.Page
+	if opts.Page != 0 {
+		repositoriesParams.Page = opts.Page
 	}
 	repositoriesParams.PageSize = 15
-	if params.Size != 0 {
-		repositoriesParams.PageSize = params.Size
+	if opts.Size != 0 {
+		repositoriesParams.PageSize = opts.Size
 	}
 
-	repositories, err := client.ListRepositories(params.ProjectName, repositoriesParams)
+	repositories, err := client.ListRepositories(opts.ProjectName, repositoriesParams)
 	if err != nil {
 		return &chat.Message{Text: common.ErrHarborResponse(err).Error()}
 	}
@@ -62,34 +63,34 @@ func listRepositories(client *harbor.Client, params *cmdParams) *chat.Message {
 	for i := range repositories {
 		cards[i] = makeRepositoryCard(repositories[i])
 	}
-	return &chat.Message{Text: fmt.Sprintf("list of repositories in %s", params.ProjectName), Cards: cards}
+	return &chat.Message{Text: fmt.Sprintf("list of repositories in %s", opts.ProjectName), Cards: cards}
 }
 
-func listArtifacts(client *harbor.Client, params *cmdParams) *chat.Message {
+func listArtifacts(client *harbor.Client, opts *SubCmdOpts) *chat.Message {
 	artifactsParams := harborModel.NewListArtifactsParams()
-	if params.Page != 0 {
-		artifactsParams.Page = params.Page
+	if opts.Page != 0 {
+		artifactsParams.Page = opts.Page
 	}
 	artifactsParams.PageSize = 15
-	if params.Size != 0 {
-		artifactsParams.PageSize = params.Size
+	if opts.Size != 0 {
+		artifactsParams.PageSize = opts.Size
 	}
 
-	artifacts, err := client.ListArtifacts(params.ProjectName, params.RepoName, artifactsParams)
+	artifacts, err := client.ListArtifacts(opts.ProjectName, opts.RepoName, artifactsParams)
 	if err != nil {
 		return &chat.Message{Text: common.ErrHarborResponse(err).Error()}
 	}
 
 	cards := make([]*chat.Card, len(artifacts))
 	for i := range artifacts {
-		tags, err := client.ListTags(params.ProjectName, params.RepoName, artifacts[i].Digest, nil)
+		tags, err := client.ListTags(opts.ProjectName, opts.RepoName, artifacts[i].Digest, nil)
 		if err != nil {
 			return &chat.Message{Text: common.ErrHarborResponse(err).Error()}
 		}
 		cards[i] = makeArtifactCard(artifacts[i], tags)
 	}
 
-	return &chat.Message{Text: fmt.Sprintf("list of artifacts in %s/%s", params.ProjectName, params.RepoName), Cards: cards}
+	return &chat.Message{Text: fmt.Sprintf("list of artifacts in %s/%s", opts.ProjectName, opts.RepoName), Cards: cards}
 }
 
 func makeProjectCard(project *harborModel.Project) *chat.Card {
