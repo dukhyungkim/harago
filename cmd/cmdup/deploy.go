@@ -1,10 +1,11 @@
-package cmddeploy
+package cmdup
 
 import (
 	"fmt"
 	"harago/common"
 	"harago/gservice/gchat"
 	"harago/stream"
+	"harago/util"
 	"strings"
 
 	pbAct "github.com/dukhyungkim/libharago/gen/go/proto/action"
@@ -12,19 +13,19 @@ import (
 	"google.golang.org/api/chat/v1"
 )
 
-type CmdDeploy struct {
+type CmdUp struct {
 	name         string
 	streamClient *stream.Client
 }
 
-func NewDeployCommand(streamClient *stream.Client) *CmdDeploy {
-	return &CmdDeploy{
-		name:         "/deploy",
+func NewUpCommand(streamClient *stream.Client) *CmdUp {
+	return &CmdUp{
+		name:         "/up",
 		streamClient: streamClient,
 	}
 }
 
-func (c *CmdDeploy) GetName() string {
+func (c *CmdUp) GetName() string {
 	return c.name
 }
 
@@ -32,7 +33,7 @@ type Opts struct {
 	Company string `long:"company" short:"c"`
 }
 
-func (c *CmdDeploy) Run(event *gchat.ChatEvent) *chat.Message {
+func (c *CmdUp) Run(event *gchat.ChatEvent) *chat.Message {
 	fields := strings.Fields(event.Message.Text)
 	if fields == nil {
 		return c.Help()
@@ -57,11 +58,11 @@ func (c *CmdDeploy) Run(event *gchat.ChatEvent) *chat.Message {
 	}
 
 	pbAction := &pbAct.ActionRequest{
-		Type:  pbAct.ActionType_DEPLOY,
+		Type:  pbAct.ActionType_UP,
 		Space: event.Space.Name,
 		Request_OneOf: &pbAct.ActionRequest_ReqDeploy{
 			ReqDeploy: &pbAct.ActionRequest_DeployRequest{
-				Name:        parseName(resourceURL),
+				Name:        util.ParseName(resourceURL),
 				ResourceUrl: resourceURL,
 			},
 		},
@@ -76,12 +77,6 @@ func (c *CmdDeploy) Run(event *gchat.ChatEvent) *chat.Message {
 	return &chat.Message{Text: fmt.Sprintf("publish to %s, Company: %s, ResourceURL: %s", subject, opts.Company, resourceURL)}
 }
 
-func (c *CmdDeploy) Help() *chat.Message {
+func (c *CmdUp) Help() *chat.Message {
 	return &chat.Message{Text: "HELP!"}
-}
-
-func parseName(resourceURL string) string {
-	s1 := strings.Split(resourceURL, ":")
-	s2 := strings.Split(s1[0], "/")
-	return s2[len(s2)-1]
 }

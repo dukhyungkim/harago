@@ -65,7 +65,7 @@ func main() {
 	log.Println("connect to nats ... success")
 
 	executor := cmd.NewExecutor()
-	if err = executor.LoadCommands(cfg, streamClient, db); err != nil {
+	if err = executor.LoadCommands(cfg, streamClient); err != nil {
 		log.Panicln(err)
 	}
 
