@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"harago/cmd/cmddown"
 	"harago/common"
 	"harago/config"
 	"harago/gservice/gchat"
@@ -77,8 +78,13 @@ func (e *Executor) LoadCommands(cfg *config.Config, streamClient *stream.Client)
 		return err
 	}
 
-	cmdDeploy := cmdup.NewUpCommand(streamClient)
-	if err := e.AddCommand(cmdDeploy.GetName(), cmdDeploy); err != nil {
+	cmdUp := cmdup.NewUpCommand(streamClient)
+	if err := e.AddCommand(cmdUp.GetName(), cmdUp); err != nil {
+		return err
+	}
+
+	cmdDown := cmddown.NewDownCommand(streamClient)
+	if err := e.AddCommand(cmdDown.GetName(), cmdDown); err != nil {
 		return err
 	}
 

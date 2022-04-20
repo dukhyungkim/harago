@@ -1,12 +1,13 @@
 package handler
 
 import (
-	harborModel "github.com/dukhyungkim/harbor-client/model"
-	pbAct "github.com/dukhyungkim/libharago/gen/go/proto/action"
 	"harago/common"
 	"harago/repository"
 	"harago/stream"
 	"log"
+
+	harborModel "github.com/dukhyungkim/harbor-client/model"
+	pbAct "github.com/dukhyungkim/libharago/gen/go/proto/action"
 )
 
 type HarborEventHandler struct {
@@ -21,7 +22,7 @@ func NewHarborEventHandler(streamClient *stream.Client, etcdClient *repository.E
 func (h *HarborEventHandler) HandleHarborEvent(event *harborModel.WebhookEvent) {
 	name := event.EventData.Repository.Name
 	request := &pbAct.ActionRequest{
-		Type: pbAct.ActionType_DEPLOY,
+		Type: pbAct.ActionType_UP,
 		Request_OneOf: &pbAct.ActionRequest_ReqDeploy{
 			ReqDeploy: &pbAct.ActionRequest_DeployRequest{
 				Name:        name,

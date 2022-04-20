@@ -2,13 +2,14 @@ package handler
 
 import (
 	"fmt"
-	pbAct "github.com/dukhyungkim/libharago/gen/go/proto/action"
-	"google.golang.org/api/chat/v1"
 	"harago/common"
 	"harago/gservice/gchat"
 	"harago/repository"
 	"log"
 	"strings"
+
+	pbAct "github.com/dukhyungkim/libharago/gen/go/proto/action"
+	"google.golang.org/api/chat/v1"
 )
 
 type ResponseHandler struct {
@@ -37,7 +38,7 @@ func (h *ResponseHandler) broadcastMessage(response *pbAct.ActionResponse) {
 
 	var message *chat.Message
 	switch response.GetType() {
-	case pbAct.ActionType_DEPLOY:
+	case pbAct.ActionType_UP:
 		message = formatDeployResponse(response)
 	default:
 		log.Println(common.ErrUnknownActionType(response.GetType()))
@@ -52,7 +53,7 @@ func (h *ResponseHandler) broadcastMessage(response *pbAct.ActionResponse) {
 func (h *ResponseHandler) sendMessageToSpace(space string, response *pbAct.ActionResponse) {
 	var message *chat.Message
 	switch response.GetType() {
-	case pbAct.ActionType_DEPLOY:
+	case pbAct.ActionType_UP:
 		message = formatDeployResponse(response)
 	default:
 		log.Println(common.ErrUnknownActionType(response.GetType()))
