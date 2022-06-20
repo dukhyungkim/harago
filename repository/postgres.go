@@ -2,10 +2,10 @@ package repository
 
 import (
 	"fmt"
+	"harago/config"
+
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"harago/config"
-	"harago/entity"
 )
 
 type DB struct {
@@ -21,8 +21,4 @@ func NewPostgres(cfg *config.DB) (*DB, error) {
 	}
 
 	return &DB{client: db}, nil
-}
-
-func (db *DB) AutoMigration() error {
-	return db.client.AutoMigrate(&entity.UserSpace{})
 }

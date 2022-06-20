@@ -25,23 +25,23 @@ func main() {
 
 	opts, err := config.ParseFlags()
 	if err != nil {
-		log.Fatalln(err)
+		log.Panicln(err)
 	}
 
 	cfg, err := config.NewConfig(opts)
 	if err != nil {
-		log.Fatalln(err)
+		log.Panicln(err)
 	}
 
 	db, err := repository.NewPostgres(cfg.DB)
 	if err != nil {
-		log.Fatalln(err)
+		log.Panicln(err)
 	}
 	log.Println("connect to postgres ... success")
 
 	etcdClient, err := repository.NewEtcd(cfg.Etcd)
 	if err != nil {
-		log.Fatalln(err)
+		log.Panicln(err)
 	}
 	defer etcdClient.Close()
 	log.Println("connect to etcd ... success")
