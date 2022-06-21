@@ -32,9 +32,24 @@ func (h *HarborEventHandler) HandleHarborEvent(event *harborModel.WebhookEvent) 
 	}
 	log.Println("pbAction:", request.String())
 
-	subject := common.SharedActionSubject
-	if !h.etcdClient.IsShared(name) {
+	var subject string
+	switch {
+	case h.etcdClient.IsIgnore(name):
+		log.Printf("%s is in ignoredList\n", name)
+		return
+
+	case h.etcdClient.IsShared(name):
+		subject = common.SharedActionSubject
+
+	case h.etcdClient.IsCompany(name):
 		subject = common.CompanyActionSubject
+
+	case h.etcdClient.IsInternal(name):
+		subject = common.InternalActionSubject
+
+	default:
+		log.Printf("%s is unknown\n", name)
+		return
 	}
 
 	if err := h.streamClient.PublishAction(subject, request); err != nil {

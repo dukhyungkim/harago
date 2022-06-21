@@ -3,18 +3,27 @@ package repository
 import (
 	"context"
 	"fmt"
-	clientv3 "go.etcd.io/etcd/client/v3"
 	"harago/common"
 	"harago/config"
 	"log"
 	"strings"
+
+	clientv3 "go.etcd.io/etcd/client/v3"
 )
 
-const sharedListKey = "/shared"
+const (
+	sharedListKey   = "/config/shared"
+	companyListKey  = "/config/company"
+	internalListKey = "/config/internal"
+	ignoreListKey   = "/config/.ignore"
+)
 
 type Etcd struct {
-	etcdClient *clientv3.Client
-	sharedList map[string]struct{}
+	etcdClient   *clientv3.Client
+	sharedList   map[string]struct{}
+	companyList  map[string]struct{}
+	internalList map[string]struct{}
+	ignoreList   map[string]struct{}
 }
 
 func NewEtcd(cfg *config.Etcd) (*Etcd, error) {
@@ -31,17 +40,47 @@ func NewEtcd(cfg *config.Etcd) (*Etcd, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), common.DefaultTimeout)
 	defer cancel()
 
-	resp, err := etcdClient.Get(ctx, sharedListKey)
+	sharedList, err := fetchKeyAndParse(ctx, etcdClient, sharedListKey)
+	if err != nil {
+		return nil, err
+	}
+
+	companyList, err := fetchKeyAndParse(ctx, etcdClient, companyListKey)
+	if err != nil {
+		return nil, err
+	}
+
+	internalList, err := fetchKeyAndParse(ctx, etcdClient, internalListKey)
+	if err != nil {
+		return nil, err
+	}
+
+	ignoreList, err := fetchKeyAndParse(ctx, etcdClient, ignoreListKey)
+	if err != nil {
+		return nil, err
+	}
+
+	return &Etcd{
+		etcdClient:   etcdClient,
+		sharedList:   sharedList,
+		companyList:  companyList,
+		internalList: internalList,
+		ignoreList:   ignoreList,
+	}, nil
+}
+
+func fetchKeyAndParse(ctx context.Context, etcdClient *clientv3.Client, key string) (map[string]struct{}, error) {
+	resp, err := etcdClient.Get(ctx, key)
 	if err != nil {
 		log.Println(fmt.Errorf("failed to get kv; %w", err))
 		return nil, err
 	}
 
 	if len(resp.Kvs) == 0 {
-		log.Println(fmt.Errorf("failed to find value from key: %s", sharedListKey))
+		log.Println(fmt.Errorf("failed to find value from key: %s", key))
 	}
 
-	return &Etcd{etcdClient: etcdClient, sharedList: makeSharedList(string(resp.Kvs[0].Value))}, nil
+	return parseListToMap(string(resp.Kvs[0].Value)), nil
 }
 
 func (e *Etcd) Close() {
@@ -55,22 +94,65 @@ func (e *Etcd) IsShared(name string) bool {
 	return has
 }
 
-func (e *Etcd) WatchSharedList() {
-	watchChan := e.etcdClient.Watch(context.Background(), sharedListKey)
+func (e *Etcd) IsCompany(name string) bool {
+	_, has := e.companyList[name]
+	return has
+}
 
-	for watchResp := range watchChan {
-		if len(watchResp.Events) == 0 {
-			continue
+func (e *Etcd) IsInternal(name string) bool {
+	_, has := e.internalList[name]
+	return has
+}
+
+func (e *Etcd) IsIgnore(name string) bool {
+	_, has := e.ignoreList[name]
+	return has
+}
+
+func (e *Etcd) WatchSharedList() {
+	sharedListChan := e.etcdClient.Watch(context.Background(), sharedListKey)
+	companyListChan := e.etcdClient.Watch(context.Background(), companyListKey)
+	internalListChan := e.etcdClient.Watch(context.Background(), internalListKey)
+	ignoreListChan := e.etcdClient.Watch(context.Background(), ignoreListKey)
+
+	for {
+		select {
+		case watchResp := <-sharedListChan:
+			if len(watchResp.Events) == 0 {
+				continue
+			}
+			e.sharedList = parseListToMap(string(watchResp.Events[0].Kv.Value))
+			log.Println(e.sharedList)
+
+		case watchResp := <-companyListChan:
+			if len(watchResp.Events) == 0 {
+				continue
+			}
+			e.companyList = parseListToMap(string(watchResp.Events[0].Kv.Value))
+			log.Println(e.companyList)
+
+		case watchResp := <-internalListChan:
+			if len(watchResp.Events) == 0 {
+				continue
+			}
+			e.internalList = parseListToMap(string(watchResp.Events[0].Kv.Value))
+			log.Println(e.internalList)
+
+		case watchResp := <-ignoreListChan:
+			if len(watchResp.Events) == 0 {
+				continue
+			}
+			e.ignoreList = parseListToMap(string(watchResp.Events[0].Kv.Value))
+			log.Println(e.ignoreList)
 		}
-		e.sharedList = makeSharedList(string(watchResp.Events[0].Kv.Value))
 	}
 }
 
-func makeSharedList(s string) map[string]struct{} {
+func parseListToMap(s string) map[string]struct{} {
 	fields := strings.Fields(s)
 	sharedList := make(map[string]struct{})
-	for _, s := range fields {
-		sharedList[s] = struct{}{}
+	for _, field := range fields {
+		sharedList[field] = struct{}{}
 	}
 	return sharedList
 }

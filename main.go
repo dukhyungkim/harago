@@ -46,18 +46,14 @@ func main() {
 	defer etcdClient.Close()
 	log.Println("connect to etcd ... success")
 
-	go func() {
-		for {
-			etcdClient.WatchSharedList()
-		}
-	}()
+	go etcdClient.WatchSharedList()
 
 	gService, err := gservice.NewGService(opts.Credential)
 	if err != nil {
 		log.Println(err)
 	}
 
-	streamClient, err := stream.NewStreamClient(cfg.Nats)
+	streamClient, err := stream.NewClient(cfg.Nats)
 	if err != nil {
 		log.Panicln(err)
 	}

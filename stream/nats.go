@@ -1,13 +1,14 @@
 package stream
 
 import (
-	pbAct "github.com/dukhyungkim/libharago/gen/go/proto/action"
-	"github.com/nats-io/nats.go"
-	"google.golang.org/protobuf/proto"
 	"harago/config"
 	"log"
 	"strings"
 	"time"
+
+	pbAct "github.com/dukhyungkim/libharago/gen/go/proto/action"
+	"github.com/nats-io/nats.go"
+	"google.golang.org/protobuf/proto"
 )
 
 type Client struct {
@@ -15,7 +16,7 @@ type Client struct {
 	timeout time.Duration
 }
 
-func NewStreamClient(cfg *config.Nats) (*Client, error) {
+func NewClient(cfg *config.Nats) (*Client, error) {
 	nc, err := nats.Connect(strings.Join(cfg.Servers, ","),
 		nats.UserInfo(cfg.Username, cfg.Password))
 	if err != nil {
@@ -35,7 +36,8 @@ func (s *Client) PublishAction(subject string, request *pbAct.ActionRequest) err
 		return err
 	}
 
-	if err := s.nc.Publish(subject, msg); err != nil {
+	err = s.nc.Publish(subject, msg)
+	if err != nil {
 		return err
 	}
 	return nil
