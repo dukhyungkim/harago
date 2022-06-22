@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"harago/common"
 	"harago/repository"
 	"harago/stream"
 	"log"
@@ -39,13 +38,13 @@ func (h *HarborEventHandler) HandleHarborEvent(event *harborModel.WebhookEvent) 
 		return
 
 	case h.etcdClient.IsShared(name):
-		subject = common.SharedActionSubject
+		subject = stream.SharedSubject
 
 	case h.etcdClient.IsCompany(name):
-		subject = common.CompanyActionSubject
+		subject = stream.CompanySubject
 
 	case h.etcdClient.IsInternal(name):
-		subject = common.InternalActionSubject
+		subject = stream.InternalSubject
 
 	default:
 		log.Printf("%s is unknown\n", name)

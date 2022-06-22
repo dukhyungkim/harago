@@ -2,7 +2,6 @@ package cmddown
 
 import (
 	"fmt"
-	"harago/common"
 	"harago/gservice/gchat"
 	"harago/stream"
 	"harago/util"
@@ -52,9 +51,9 @@ func (c *CmdDown) Run(event *gchat.ChatEvent) *chat.Message {
 	}
 	resourceURL := args[0]
 
-	subject := common.SharedActionSubject
+	subject := stream.SharedSubject
 	if opts.Company != "" {
-		subject = fmt.Sprintf(common.SpecificCompanyActionSubject, opts.Company)
+		subject = fmt.Sprintf(stream.SpecificCompanySubject, opts.Company)
 	}
 
 	pbAction := &pbAct.ActionRequest{
@@ -71,7 +70,7 @@ func (c *CmdDown) Run(event *gchat.ChatEvent) *chat.Message {
 		return &chat.Message{Text: err.Error()}
 	}
 
-	if subject == common.SharedActionSubject {
+	if subject == stream.SharedSubject {
 		return &chat.Message{Text: fmt.Sprintf("publish to %s, ResourceURL: %s", subject, resourceURL)}
 	}
 	return &chat.Message{Text: fmt.Sprintf("publish to %s, Company: %s, ResourceURL: %s", subject, opts.Company, resourceURL)}

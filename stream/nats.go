@@ -11,6 +11,15 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
+const (
+	responseSubject = "handago.response"
+
+	SharedSubject          = "harago.shared.action"
+	CompanySubject         = "harago.company.action"
+	InternalSubject        = "harago.internal.action"
+	SpecificCompanySubject = "harago.%s.action"
+)
+
 type Client struct {
 	nc      *nats.Conn
 	timeout time.Duration
@@ -46,7 +55,7 @@ func (s *Client) PublishAction(subject string, request *pbAct.ActionRequest) err
 type ResponseHandler func(message *pbAct.ActionResponse)
 
 func (s *Client) ClamResponse(handler ResponseHandler) error {
-	if _, err := s.nc.QueueSubscribe("handago.response", "harago", func(msg *nats.Msg) {
+	if _, err := s.nc.QueueSubscribe(responseSubject, "harago", func(msg *nats.Msg) {
 		var message pbAct.ActionResponse
 		if err := proto.Unmarshal(msg.Data, &message); err != nil {
 			log.Println(err)
