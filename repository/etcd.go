@@ -15,6 +15,7 @@ const (
 	sharedListKey   = "/config/shared"
 	companyListKey  = "/config/company"
 	internalListKey = "/config/internal"
+	externalListKey = "/config/external"
 	ignoreListKey   = "/config/.ignore"
 )
 
@@ -56,6 +57,11 @@ func NewEtcd(cfg *config.Etcd) (*Etcd, error) {
 		return nil, err
 	}
 
+	externalList, err := fetchKeyAndParse(ctx, etcdClient, externalListKey)
+	if err != nil {
+		return nil, err
+	}
+
 	ignoreList, err := fetchKeyAndParse(ctx, etcdClient, ignoreListKey)
 	if err != nil {
 		return nil, err
@@ -66,6 +72,7 @@ func NewEtcd(cfg *config.Etcd) (*Etcd, error) {
 		sharedList:   sharedList,
 		companyList:  companyList,
 		internalList: internalList,
+		externalList: externalList,
 		ignoreList:   ignoreList,
 	}, nil
 }
@@ -119,6 +126,7 @@ func (e *Etcd) WatchSharedList() {
 	sharedListChan := e.etcdClient.Watch(context.Background(), sharedListKey)
 	companyListChan := e.etcdClient.Watch(context.Background(), companyListKey)
 	internalListChan := e.etcdClient.Watch(context.Background(), internalListKey)
+	externalListChan := e.etcdClient.Watch(context.Background(), externalListKey)
 	ignoreListChan := e.etcdClient.Watch(context.Background(), ignoreListKey)
 
 	for {
@@ -128,28 +136,35 @@ func (e *Etcd) WatchSharedList() {
 				continue
 			}
 			e.sharedList = parseListToMap(string(watchResp.Events[0].Kv.Value))
-			log.Println(e.sharedList)
+			log.Println("sharedList:", e.sharedList)
 
 		case watchResp := <-companyListChan:
 			if len(watchResp.Events) == 0 {
 				continue
 			}
 			e.companyList = parseListToMap(string(watchResp.Events[0].Kv.Value))
-			log.Println(e.companyList)
+			log.Println("companyList", e.companyList)
 
 		case watchResp := <-internalListChan:
 			if len(watchResp.Events) == 0 {
 				continue
 			}
 			e.internalList = parseListToMap(string(watchResp.Events[0].Kv.Value))
-			log.Println(e.internalList)
+			log.Println("internalList", e.internalList)
+
+		case watchResp := <-externalListChan:
+			if len(watchResp.Events) == 0 {
+				continue
+			}
+			e.externalList = parseListToMap(string(watchResp.Events[0].Kv.Value))
+			log.Println("external", e.externalList)
 
 		case watchResp := <-ignoreListChan:
 			if len(watchResp.Events) == 0 {
 				continue
 			}
 			e.ignoreList = parseListToMap(string(watchResp.Events[0].Kv.Value))
-			log.Println(e.ignoreList)
+			log.Println("ignoreList", e.ignoreList)
 		}
 	}
 }
