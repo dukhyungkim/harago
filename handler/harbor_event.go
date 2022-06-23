@@ -9,13 +9,42 @@ import (
 	pbAct "github.com/dukhyungkim/libharago/gen/go/proto/action"
 )
 
+type subjectMapper struct {
+	f       func(string) bool
+	subject string
+}
+
 type HarborEventHandler struct {
 	streamClient *stream.Client
 	etcdClient   *repository.Etcd
+	mappers      []subjectMapper
 }
 
 func NewHarborEventHandler(streamClient *stream.Client, etcdClient *repository.Etcd) *HarborEventHandler {
-	return &HarborEventHandler{streamClient: streamClient, etcdClient: etcdClient}
+	fss := []subjectMapper{
+		{
+			f:       etcdClient.IsShared,
+			subject: stream.SharedSubject,
+		},
+		{
+			f:       etcdClient.IsCompany,
+			subject: stream.CompanySubject,
+		},
+		{
+			f:       etcdClient.IsInternal,
+			subject: stream.InternalSubject,
+		},
+		{
+			f:       etcdClient.IsExternal,
+			subject: stream.ExternalSubject,
+		},
+	}
+
+	return &HarborEventHandler{
+		streamClient: streamClient,
+		etcdClient:   etcdClient,
+		mappers:      fss,
+	}
 }
 
 func (h *HarborEventHandler) HandleHarborEvent(event *harborModel.WebhookEvent) {
@@ -31,27 +60,18 @@ func (h *HarborEventHandler) HandleHarborEvent(event *harborModel.WebhookEvent) 
 	}
 	log.Println("pbAction:", request.String())
 
-	var subject string
-	switch {
-	case h.etcdClient.IsIgnore(name):
+	if h.etcdClient.IsIgnore(name) {
 		log.Printf("%s is in ignoredList\n", name)
-		return
-
-	case h.etcdClient.IsShared(name):
-		subject = stream.SharedSubject
-
-	case h.etcdClient.IsCompany(name):
-		subject = stream.CompanySubject
-
-	case h.etcdClient.IsInternal(name):
-		subject = stream.InternalSubject
-
-	default:
-		log.Printf("%s is unknown\n", name)
 		return
 	}
 
-	if err := h.streamClient.PublishAction(subject, request); err != nil {
-		log.Println(err)
+	for _, mapper := range h.mappers {
+		if !mapper.f(name) {
+			continue
+		}
+
+		if err := h.streamClient.PublishAction(mapper.subject, request); err != nil {
+			log.Println(err)
+		}
 	}
 }

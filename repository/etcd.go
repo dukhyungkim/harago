@@ -24,6 +24,7 @@ type Etcd struct {
 	companyList  map[string]struct{}
 	internalList map[string]struct{}
 	ignoreList   map[string]struct{}
+	externalList map[string]struct{}
 }
 
 func NewEtcd(cfg *config.Etcd) (*Etcd, error) {
@@ -101,6 +102,11 @@ func (e *Etcd) IsCompany(name string) bool {
 
 func (e *Etcd) IsInternal(name string) bool {
 	_, has := e.internalList[name]
+	return has
+}
+
+func (e *Etcd) IsExternal(name string) bool {
+	_, has := e.externalList[name]
 	return has
 }
 

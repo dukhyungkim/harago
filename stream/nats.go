@@ -17,6 +17,7 @@ const (
 	SharedSubject          = "harago.shared.action"
 	CompanySubject         = "harago.company.action"
 	InternalSubject        = "harago.internal.action"
+	ExternalSubject        = "harago.external.action"
 	SpecificCompanySubject = "harago.%s.action"
 )
 

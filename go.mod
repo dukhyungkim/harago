@@ -4,6 +4,7 @@ go 1.17
 
 require (
 	github.com/dukhyungkim/harbor-client v0.0.0-20220125134006-3957a8318a18
+	github.com/dukhyungkim/libharago v0.0.0-20220419154834-336f3d0107a8
 	github.com/gofiber/fiber/v2 v2.23.0
 	github.com/ilyakaznacheev/cleanenv v1.2.6
 	github.com/jessevdk/go-flags v1.5.0
@@ -11,6 +12,7 @@ require (
 	go.etcd.io/etcd/client/v3 v3.5.1
 	golang.org/x/oauth2 v0.0.0-20211104180415-d3ed0bb246c8
 	google.golang.org/api v0.63.0
+	google.golang.org/protobuf v1.27.1
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
 	gorm.io/driver/postgres v1.2.3
 	gorm.io/gorm v1.22.5
@@ -22,7 +24,6 @@ require (
 	github.com/andybalholm/brotli v1.0.2 // indirect
 	github.com/coreos/go-semver v0.3.0 // indirect
 	github.com/coreos/go-systemd/v22 v22.3.2 // indirect
-	github.com/dukhyungkim/libharago v0.0.0-20220419154834-336f3d0107a8 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
@@ -58,6 +59,5 @@ require (
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/genproto v0.0.0-20211208223120-3a66f561d7aa // indirect
 	google.golang.org/grpc v1.40.1 // indirect
-	google.golang.org/protobuf v1.27.1 // indirect
 	olympos.io/encoding/edn v0.0.0-20201019073823-d3554ca0b0a3 // indirect
 )
