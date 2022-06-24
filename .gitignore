@@ -18,3 +18,4 @@ credential*.json
 config*.yml
 
 /.idea
+harago*

@@ -73,5 +73,6 @@ func (h *HarborEventHandler) HandleHarborEvent(event *harborModel.WebhookEvent) 
 		if err := h.streamClient.PublishAction(mapper.subject, request); err != nil {
 			log.Println(err)
 		}
+		log.Printf("sent action to subject: %s\n", mapper.subject)
 	}
 }
