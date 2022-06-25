@@ -3,9 +3,11 @@ package cmd
 import (
 	"fmt"
 	"harago/cmd/cmddown"
+	"harago/cmd/cmdtemplate"
 	"harago/common"
 	"harago/config"
 	"harago/gservice/gchat"
+	"harago/repository"
 	"harago/stream"
 	"strings"
 
@@ -61,7 +63,7 @@ func (e *Executor) Run(event *gchat.ChatEvent) *chat.Message {
 	return command.Run(event)
 }
 
-func (e *Executor) LoadCommands(cfg *config.Config, streamClient *stream.Client) error {
+func (e *Executor) LoadCommands(cfg *config.Config, streamClient *stream.Client, etcdClient *repository.Etcd) error {
 	harborClient := harbor.NewClient(&harbor.Config{
 		URL:      cfg.Harbor.URL,
 		Username: cfg.Harbor.Username,
@@ -85,6 +87,11 @@ func (e *Executor) LoadCommands(cfg *config.Config, streamClient *stream.Client)
 
 	cmdDown := cmddown.NewDownCommand(streamClient)
 	if err := e.AddCommand(cmdDown.GetName(), cmdDown); err != nil {
+		return err
+	}
+
+	cmdTemplate := cmdtemplate.NewTemplateCommand(etcdClient)
+	if err := e.AddCommand(cmdTemplate.GetName(), cmdTemplate); err != nil {
 		return err
 	}
 

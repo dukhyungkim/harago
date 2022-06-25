@@ -20,7 +20,7 @@ const (
 )
 
 type Etcd struct {
-	etcdClient   *clientv3.Client
+	client       *clientv3.Client
 	sharedList   map[string]struct{}
 	companyList  map[string]struct{}
 	internalList map[string]struct{}
@@ -68,7 +68,7 @@ func NewEtcd(cfg *config.Etcd) (*Etcd, error) {
 	}
 
 	return &Etcd{
-		etcdClient:   etcdClient,
+		client:       etcdClient,
 		sharedList:   sharedList,
 		companyList:  companyList,
 		internalList: internalList,
@@ -92,7 +92,7 @@ func fetchKeyAndParse(ctx context.Context, etcdClient *clientv3.Client, key stri
 }
 
 func (e *Etcd) Close() {
-	if err := e.etcdClient.Close(); err != nil {
+	if err := e.client.Close(); err != nil {
 		log.Println(err)
 	}
 }
@@ -123,11 +123,11 @@ func (e *Etcd) IsIgnore(name string) bool {
 }
 
 func (e *Etcd) WatchSharedList() {
-	sharedListChan := e.etcdClient.Watch(context.Background(), sharedListKey)
-	companyListChan := e.etcdClient.Watch(context.Background(), companyListKey)
-	internalListChan := e.etcdClient.Watch(context.Background(), internalListKey)
-	externalListChan := e.etcdClient.Watch(context.Background(), externalListKey)
-	ignoreListChan := e.etcdClient.Watch(context.Background(), ignoreListKey)
+	sharedListChan := e.client.Watch(context.Background(), sharedListKey)
+	companyListChan := e.client.Watch(context.Background(), companyListKey)
+	internalListChan := e.client.Watch(context.Background(), internalListKey)
+	externalListChan := e.client.Watch(context.Background(), externalListKey)
+	ignoreListChan := e.client.Watch(context.Background(), ignoreListKey)
 
 	for {
 		select {
@@ -167,6 +167,22 @@ func (e *Etcd) WatchSharedList() {
 			log.Println("ignoreList", e.ignoreList)
 		}
 	}
+}
+
+func (e *Etcd) ListTemplates() ([]string, error) {
+	const key = "/templates"
+	resp, err := e.client.Get(context.Background(), key)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(resp.Kvs) == 0 {
+		return nil, fmt.Errorf("failed to find value from key: %s", key)
+	}
+
+	log.Println(resp.Kvs)
+
+	return []string{".", ".."}, nil
 }
 
 func parseListToMap(s string) map[string]struct{} {
