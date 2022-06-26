@@ -66,7 +66,7 @@ func (c *CmdTemplate) Run(event *gchat.ChatEvent) *chat.Message {
 		if len(args) == 0 {
 			return &chat.Message{Text: "need name"}
 		}
-		return c.handleShow(args[0], opts.Show)
+		return c.handleShow(args[0], &opts.Show)
 	default:
 		return c.Help()
 	}
@@ -85,7 +85,7 @@ func (c *CmdTemplate) handleList() *chat.Message {
 	return &chat.Message{Text: strings.Join(templates, "\n")}
 }
 
-func (c *CmdTemplate) handleShow(templateName string, showOpts ShowOpts) *chat.Message {
+func (c *CmdTemplate) handleShow(templateName string, opts *ShowOpts) *chat.Message {
 	templateStr, err := c.etcdClient.GetTemplate(templateName)
 	if err != nil {
 		return &chat.Message{Text: err.Error()}
@@ -97,7 +97,7 @@ func (c *CmdTemplate) handleShow(templateName string, showOpts ShowOpts) *chat.M
 	}
 
 	var tmplBuffer bytes.Buffer
-	err = tmpl.Execute(&tmplBuffer, showOpts)
+	err = tmpl.Execute(&tmplBuffer, opts)
 	if err != nil {
 		return &chat.Message{Text: err.Error()}
 	}
