@@ -3,24 +3,25 @@ package config
 import (
 	"context"
 	"fmt"
-	"github.com/ilyakaznacheev/cleanenv"
-	"go.etcd.io/etcd/client/v3"
-	"gopkg.in/yaml.v3"
 	"harago/common"
 	"log"
 	"time"
+
+	"github.com/ilyakaznacheev/cleanenv"
+	"go.etcd.io/etcd/client/v3"
+	"gopkg.in/yaml.v3"
 )
 
 type Config struct {
-	Server *Server `yaml:"server"`
-	Nats   *Nats   `yaml:"nats"`
-	DB     *DB     `yaml:"db"`
-	Harbor *Harbor `yaml:"harbor"`
-	Etcd   *Etcd   `yaml:"etcd"`
+	Server Server `yaml:"server"`
+	Nats   Nats   `yaml:"nats"`
+	DB     DB     `yaml:"db"`
+	Harbor Harbor `yaml:"harbor"`
+	Etcd   Etcd   `yaml:"etcd"`
 }
 
 type Server struct {
-	Port int `yaml:"port"`
+	Port int `yaml:"port" env-default:"5678"`
 }
 
 type Nats struct {

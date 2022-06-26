@@ -122,12 +122,13 @@ func (e *Etcd) IsIgnore(name string) bool {
 	return has
 }
 
-func (e *Etcd) WatchSharedList() {
-	sharedListChan := e.client.Watch(context.Background(), sharedListKey)
-	companyListChan := e.client.Watch(context.Background(), companyListKey)
-	internalListChan := e.client.Watch(context.Background(), internalListKey)
-	externalListChan := e.client.Watch(context.Background(), externalListKey)
-	ignoreListChan := e.client.Watch(context.Background(), ignoreListKey)
+func (e *Etcd) WatchConfigList() {
+	ctx := context.Background()
+	sharedListChan := e.client.Watch(ctx, sharedListKey)
+	companyListChan := e.client.Watch(ctx, companyListKey)
+	internalListChan := e.client.Watch(ctx, internalListKey)
+	externalListChan := e.client.Watch(ctx, externalListKey)
+	ignoreListChan := e.client.Watch(ctx, ignoreListKey)
 
 	for {
 		select {
@@ -169,20 +170,45 @@ func (e *Etcd) WatchSharedList() {
 	}
 }
 
+const templatePrefix = "/templates/"
+
 func (e *Etcd) ListTemplates() ([]string, error) {
-	const key = "/templates"
-	resp, err := e.client.Get(context.Background(), key)
+	ctx, cancel := context.WithTimeout(context.Background(), common.DefaultTimeout)
+	defer cancel()
+
+	resp, err := e.client.Get(ctx, templatePrefix, clientv3.WithPrefix(), clientv3.WithKeysOnly())
 	if err != nil {
 		return nil, err
 	}
 
 	if len(resp.Kvs) == 0 {
-		return nil, fmt.Errorf("failed to find value from key: %s", key)
+		return nil, fmt.Errorf("failed to find value from key: %s", templatePrefix)
 	}
 
-	log.Println(resp.Kvs)
+	templates := make([]string, len(resp.Kvs))
+	for i, kv := range resp.Kvs {
+		templates[i] = strings.TrimPrefix(string(kv.Key), templatePrefix)
+	}
 
-	return []string{".", ".."}, nil
+	return templates, nil
+}
+
+func (e *Etcd) GetTemplate(name string) (string, error) {
+	key := templatePrefix + name
+
+	ctx, cancel := context.WithTimeout(context.Background(), common.DefaultTimeout)
+	defer cancel()
+
+	resp, err := e.client.Get(ctx, key)
+	if err != nil {
+		return "", err
+	}
+
+	if len(resp.Kvs) == 0 {
+		return "", fmt.Errorf("failed to find value from key: %s", key)
+	}
+
+	return string(resp.Kvs[0].Value), nil
 }
 
 func parseListToMap(s string) map[string]struct{} {

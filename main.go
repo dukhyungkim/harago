@@ -33,27 +33,27 @@ func main() {
 		log.Panicln(err)
 	}
 
-	db, err := repository.NewPostgres(cfg.DB)
+	db, err := repository.NewPostgres(&cfg.DB)
 	if err != nil {
 		log.Panicln(err)
 	}
 	log.Println("connect to postgres ... success")
 
-	etcdClient, err := repository.NewEtcd(cfg.Etcd)
+	etcdClient, err := repository.NewEtcd(&cfg.Etcd)
 	if err != nil {
 		log.Panicln(err)
 	}
 	defer etcdClient.Close()
 	log.Println("connect to etcd ... success")
 
-	go etcdClient.WatchSharedList()
+	go etcdClient.WatchConfigList()
 
 	gService, err := gservice.NewGService(opts.Credential)
 	if err != nil {
 		log.Println(err)
 	}
 
-	streamClient, err := stream.NewClient(cfg.Nats)
+	streamClient, err := stream.NewClient(&cfg.Nats)
 	if err != nil {
 		log.Panicln(err)
 	}
